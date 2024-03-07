@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:24:42 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 15:52:36 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/07 17:11:13 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,12 @@ private:
 	~Parser() {}
 
 	static const set<string>	_authorizedKeys;
-	
+	static const set<string>	_authorizedStdLocationKeys;
+	static const set<string>	_authorizedUploadKeys;
+	static const set<string>	_authorizedCGIKeys;
+
 public:
+
 	static void	printAuthorizedKeys( void );
 };
 

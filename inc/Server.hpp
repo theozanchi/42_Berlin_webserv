@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 16:51:42 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/07 17:57:09 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@ private:
 	vector<string>			_host;
 	vector<string>			_serverName;
 	map<int, string>		_errorPage;
-	int						_ClientMaxBodySize;
-	bool					_ClientBodyInFileOnly;
-	int						_ClientBodyBufferSize;
-	int						_ClientBodyTimeOut;
+	int						_clientMaxBodySize;
+	bool					_clientBodyInFileOnly;
+	int						_clientBodyBufferSize;
+	int						_clientBodyTimeOut;
 	map<string, ALocation*>	_location;
 
 public:

@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 15:59:27 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/07 17:11:31 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,53 @@
 
 /* Private attributes ******************************************************* */
 
-const set<string>	Parser::_authorizedKeys = {
-	"listen",
-	"host",
-	"server_name",
-	"error_page",
-	"client_max_body_size",
-	"client_body_in_file_only",
-	"client_body_buffer_size",
-	"client_body_timeout",
-	"location",
-	"allow",
-	"index",
-	"autoindex",
-	"upload_store"
+set<string>	populateAuthorizedKeys( void ) {
+	set<string>	keys;
+	
+	keys.insert("listen");
+	keys.insert("host");
+	keys.insert("server_name");
+	keys.insert("error_page");
+	keys.insert("client_max_body_size");
+	keys.insert("client_body_in_file_only");
+	keys.insert("client_body_buffer_size");
+	keys.insert("client_body_timeout");
+	keys.insert("location");
+
+	return (keys);
+}
+
+set<string>	populateStdLocationKeys( void ) {
+	set<string>	keys;
+	
+	keys.insert("allow");
+	keys.insert("index");
+	keys.insert("autoindex");
+
+	return (keys);
+}
+
+set<string>	populateUploadKeys( void ) {
+	set<string>	keys;
+	
+	keys.insert("allow");
+	keys.insert("upload_store");
+
+	return (keys);
+}
+
+set<string>	populateCGIKeys( void ) {
+	set<string>	keys;
+
+	keys.insert("tbd");
+
+	return (keys);
 };
+
+const set<string>	Parser::_authorizedKeys = populateAuthorizedKeys();
+const set<string>	Parser::_authorizedStdLocationKeys = populateStdLocationKeys();
+const set<string>	Parser::_authorizedUploadKeys = populateUploadKeys();
+const set<string>	Parser::_authorizedCGIKeys = populateCGIKeys();
 
 /* Static methods *********************************************************** */
 
