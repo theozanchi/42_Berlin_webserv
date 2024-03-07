@@ -1,28 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   CGI.hpp                                            :+:      :+:    :+:   */
+/*   Parser.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/07 11:41:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 16:03:33 by tzanchi          ###   ########.fr       */
+/*   Created: 2024/03/07 15:24:42 by tzanchi           #+#    #+#             */
+/*   Updated: 2024/03/07 15:52:36 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CGI_HPP
-# define CGI_HPP
+#ifndef PARSER_HPP
+# define PARSER_HPP
 
-# include "ALocation.hpp"
+# include <set>
+# include <string>
 
-class CGI : public ALocation {
+using namespace std;
+
+class Parser {
 private:
+	Parser() {}
+	~Parser() {}
 
+	static const set<string>	_authorizedKeys;
+	
 public:
-	CGI();
-	CGI( const CGI& src );
-	CGI& operator=( const CGI& src );
-	~CGI();
+	static void	printAuthorizedKeys( void );
 };
 
 #endif

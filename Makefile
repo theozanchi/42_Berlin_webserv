@@ -6,13 +6,13 @@
 #    By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/06 11:40:43 by tzanchi           #+#    #+#              #
-#    Updated: 2024/03/07 11:29:06 by tzanchi          ###   ########.fr        #
+#    Updated: 2024/03/07 16:54:27 by tzanchi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #Compiler targets and libraries
 CC			=	c++
-CFLAGS		=	-Wall -Wextra -Werror -std=c++98
+CFLAGS		=	#-Wall -Wextra -Werror -std=c++98
 CFLAGS		+=	-I$(patsubst %/,%,$(patsubst ./%,%,$(SRCS_DIR)))
 NAME		=	webserv
 
@@ -30,11 +30,15 @@ NC			=	\033[0m
 BOLD		=	\033[1m
 TICK		=	✓
 
-SRC			=	class/Configuration.cpp \
-				class/Location.cpp \
+SRC			=	class/ALocation.cpp \
+				class/CGI.cpp \
+				class/Configuration.cpp \
 				class/Server.cpp \
+				class/StdLocation.cpp \
+				class/Upload.cpp \
 				\
-				main.cpp
+				main.cpp \
+				Parser.cpp
 
 SRCS		=	$(addprefix ${SRCS_DIR}, ${SRC})
 SRC_NR		=	$(words ${SRCS})
@@ -47,8 +51,8 @@ ${NAME}:		entry_message ${OBJS}
 				@if [ -e ${NAME} ] && [ "$(shell find ${OBJ_DIR} -newer ${NAME} 2>/dev/null)" = "" ]; then \
 					echo "Nothing to do\n"; \
 				else \
-					@${CC} ${CFLAGS} ${OBJS} -o ${NAME}; \
-					@echo "${YELLOW}\nCompilation complete, ${NAME} executable at the root of the directory${NC}\n";\
+					${CC} ${CFLAGS} ${OBJS} -o ${NAME}; \
+					echo "${YELLOW}\nCompilation complete, ${NAME} executable at the root of the directory${NC}\n";\
 				fi
 
 $(OBJ_DIR)/%.o:	$(SRCS_DIR)%.cpp

@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 11:33:23 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/07 16:51:42 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ private:
 	bool					_ClientBodyInFileOnly;
 	int						_ClientBodyBufferSize;
 	int						_ClientBodyTimeOut;
-	map<string, ALocation>	_location;
+	map<string, ALocation*>	_location;
 
 public:
 	Server();
