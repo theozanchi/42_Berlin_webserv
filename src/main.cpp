@@ -15,5 +15,5 @@
 int	main( int argc, char **argv ) {
 	(void)argc;
 	(void)argv;
-	cout << "Hello world" << endl;
+	cout << "Hello world, this server is great" << endl;
 }
