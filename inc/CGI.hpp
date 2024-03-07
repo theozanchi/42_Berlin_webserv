@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   CGI.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/06 11:41:07 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 11:00:34 by tzanchi          ###   ########.fr       */
+/*   Created: 2024/03/07 11:41:27 by tzanchi           #+#    #+#             */
+/*   Updated: 2024/03/07 14:48:59 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#ifndef CGI_HPP
+# define CGI_HPP
 
-# include <iostream>
+# include "ALocation.hpp"
 
-# include "Configuration.hpp"
-# include "Server.hpp"
-# include "Location.hpp"
+class CGI : public ALocation {
+private:
 
-using namespace std;
+public:
+	CGI();
+	CGI( const CGI& src );
+	CGI& operator=( const CGI& src );
+	~CGI() {}
+};
 
 #endif

@@ -1,24 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/06 11:41:07 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 11:00:34 by tzanchi          ###   ########.fr       */
+/*   Created: 2024/03/07 14:46:37 by tzanchi           #+#    #+#             */
+/*   Updated: 2024/03/07 14:51:20 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#include "CGI.hpp"
 
-# include <iostream>
+/* Constructors, assignment operator and destructor ************************* */
 
-# include "Configuration.hpp"
-# include "Server.hpp"
-# include "Location.hpp"
+CGI::CGI() : ALocation() {}
 
-using namespace std;
+CGI::CGI( const CGI& src ) : ALocation(src) { *this = src; }
 
-#endif
+CGI& CGI::operator=( const CGI& src ) {
+	if (this != &src) {
+		*this = src;
+	}
+	return (*this);
+}
+
+CGI::~CGI() {}
+
+/* Member functions ********************************************************* */

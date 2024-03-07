@@ -1,24 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/06 11:41:07 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 11:00:34 by tzanchi          ###   ########.fr       */
+/*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
+/*   Updated: 2024/03/07 10:13:33 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#include "Server.hpp"
 
-# include <iostream>
+/* Constructors, assignment operator and destructor ************************* */
 
-# include "Configuration.hpp"
-# include "Server.hpp"
-# include "Location.hpp"
+Server::Server() {}
 
-using namespace std;
+Server::Server( const Server& src ) { *this = src; }
 
-#endif
+Server& Server::operator=( const Server& src ) {
+	if (this != &src) {
+		*this = src;
+	}
+	return (*this);
+}
+
+Server::~Server() {}
+
+/* Member functions ********************************************************* */

@@ -1,24 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   Upload.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/06 11:41:07 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 11:00:34 by tzanchi          ###   ########.fr       */
+/*   Created: 2024/03/07 14:46:25 by tzanchi           #+#    #+#             */
+/*   Updated: 2024/03/07 14:50:11 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#ifndef UPLOAD_HPP
+# define UPLOAD_HPP
 
-# include <iostream>
+# include "ALocation.hpp"
 
-# include "Configuration.hpp"
-# include "Server.hpp"
-# include "Location.hpp"
+class Upload : public ALocation{
+private:
+	string	_uploadStore;
 
-using namespace std;
+public:
+	Upload();
+	Upload( const Upload& src );
+	Upload& operator=( const Upload& src );
+	~Upload();
+};
 
 #endif

@@ -1,24 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   Configuration.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/06 11:41:07 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 11:00:34 by tzanchi          ###   ########.fr       */
+/*   Created: 2024/03/06 18:59:46 by tzanchi           #+#    #+#             */
+/*   Updated: 2024/03/07 11:25:45 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#ifndef CONFIGURATION_HPP
+# define CONFIGURATION_HPP
 
-# include <iostream>
-
-# include "Configuration.hpp"
-# include "Server.hpp"
-# include "Location.hpp"
+# include <string>
+# include <vector>
 
 using namespace std;
+
+class Server;
+
+class Configuration {
+private:
+	vector<Server>	_server;
+
+public:
+	Configuration();
+	Configuration( const Configuration& src );
+	Configuration& operator=( const Configuration& src );
+	~Configuration();
+};
 
 #endif
