@@ -6,13 +6,13 @@
 #    By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/06 11:40:43 by tzanchi           #+#    #+#              #
-#    Updated: 2024/03/07 16:55:15 by tzanchi          ###   ########.fr        #
+#    Updated: 2024/03/11 17:34:22 by tzanchi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #Compiler targets and libraries
 CC			=	c++
-CFLAGS		=	-Wall -Wextra -Werror -std=c++98
+# CFLAGS		=	-Wall -Wextra -Werror -std=c++98
 CFLAGS		+=	-I$(patsubst %/,%,$(patsubst ./%,%,$(SRCS_DIR)))
 NAME		=	webserv
 

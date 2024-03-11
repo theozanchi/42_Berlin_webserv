@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/11 12:50:45 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/11 17:58:21 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,61 @@ bool	Parser::checkCurlyBrackets( ifstream& ifs ) {
 	return (opening_brackets == closing_brackets);
 }
 
-void	Parser::parseLine( Configuration* config, const string& line ) {
+bool	Parser::isEmpty( const string& line ) {
+	if (line.empty())
+		return (true);
+	
+	for (string::const_iterator it = line.begin(); it < line.end(); ++it) {
+		if (!isspace(*it) && *it != '}' && *it != '{')
+			return (false);
+	}
+	
+	return (true);
+}
+
+bool	Parser::isCommented( const string& line ) {
+	string::const_iterator	it = line.begin();
+
+	while (isspace(*it))
+		++it;
+
+	if (*it == '#')
+		return (true);
+	else
+		return (false);
+}
+
+// void	Parser::identifyBlockType( const string& line, blockType** block_type ) {
+	
+// }
+
+string	Parser::extractKey( const string& line, size_t line_count ) {
+	size_t	begin = 0, first_space, first_tab, end;
+
+	while (isspace(line[begin]))
+		begin++;
+
+	first_space = line.find(' ', begin);
+	first_tab = line.find('\t', begin);
+
+	if (first_space == string::npos && first_tab == string::npos) {
+		stringstream ss;
+		ss << "Missing value after key at line " << line_count << ": " << line;
+		throw (invalid_argument(ss.str()));
+	}
+	
+	return (line.substr(begin, min(first_space, first_tab) - begin));
+}
+
+void	Parser::parseLine( Configuration* config, const string& line, size_t line_count, blockType* block_type ) {
+	if (isEmpty(line) || isCommented(line))
+		return ;
+
+	string	key = extractKey(line, line_count);
+	cout << key << endl;
 	(void)config;
-	(void)line;
+	(void)block_type;
+	// identifyBlockType(line, &block_type);
 }
 
 /* Public methods *********************************************************** */
@@ -90,13 +142,16 @@ void	Parser::parseLine( Configuration* config, const string& line ) {
 void	Parser::parseFile( Configuration* config, const char* file ) {
 	ifstream	ifs;
 	string		line;
+	size_t		line_count = 1;
+	blockType	block_type;
 
 	ifs.open(file, ifstream::in);
 	if (!checkCurlyBrackets(ifs))
 		throw (invalid_argument("Incorrect number of brackets {} in " + string(file)));
-	// while (getline(ifs, line)) {
-	// 	parseLine(config, line);
-	// }
+	while (getline(ifs, line)) {
+		parseLine(config, line, line_count, &block_type);
+		line_count++;
+	}
 	(void)config;
 	ifs.close();
 }
