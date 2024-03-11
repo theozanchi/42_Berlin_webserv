@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 17:11:31 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/11 12:50:45 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,41 @@ const set<string>	Parser::_authorizedStdLocationKeys = populateStdLocationKeys()
 const set<string>	Parser::_authorizedUploadKeys = populateUploadKeys();
 const set<string>	Parser::_authorizedCGIKeys = populateCGIKeys();
 
-/* Static methods *********************************************************** */
+/* Private methods ********************************************************** */
 
-void	Parser::printAuthorizedKeys( void ) {
-	for (set<string>::iterator it = _authorizedKeys.begin(); it != _authorizedKeys.end(); ++it) {
-		cout << *it << endl;
+bool	Parser::checkCurlyBrackets( ifstream& ifs ) {
+	int		opening_brackets = 0;
+	int		closing_brackets = 0;
+	string	line;
+
+	while (getline(ifs, line)) {
+		opening_brackets += count(line.begin(), line.end(), '{');
+		closing_brackets += count(line.begin(), line.end(), '}');
 	}
+
+	ifs.clear();			//clearing any potential error flag
+	ifs.seekg(0, ios::beg);	//setting back offset to begin of ifs
+
+	return (opening_brackets == closing_brackets);
+}
+
+void	Parser::parseLine( Configuration* config, const string& line ) {
+	(void)config;
+	(void)line;
+}
+
+/* Public methods *********************************************************** */
+
+void	Parser::parseFile( Configuration* config, const char* file ) {
+	ifstream	ifs;
+	string		line;
+
+	ifs.open(file, ifstream::in);
+	if (!checkCurlyBrackets(ifs))
+		throw (invalid_argument("Incorrect number of brackets {} in " + string(file)));
+	// while (getline(ifs, line)) {
+	// 	parseLine(config, line);
+	// }
+	(void)config;
+	ifs.close();
 }

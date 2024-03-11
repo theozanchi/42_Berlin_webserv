@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:24:42 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 17:11:13 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/11 12:48:38 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,13 @@
 
 # include <set>
 # include <string>
+# include <fstream>
+# include <exception>
+# include <algorithm>
 
 using namespace std;
+
+class Configuration;
 
 class Parser {
 private:
@@ -28,9 +33,12 @@ private:
 	static const set<string>	_authorizedUploadKeys;
 	static const set<string>	_authorizedCGIKeys;
 
+	static bool	checkCurlyBrackets( ifstream& ifs );
+	static void	parseLine( Configuration* config, const string& line );
+
 public:
 
-	static void	printAuthorizedKeys( void );
+	static void	parseFile( Configuration* config, const char* file );
 };
 
 #endif
