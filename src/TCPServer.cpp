@@ -1,5 +1,10 @@
 #include "../inc/TCPServer.hpp"
 
+// To Do
+// For Each port I will create a Server Socket that is bind and listens to the port
+// all will call the wait for connection function that will keep track of the client fds?
+// implement the Crtl + C Signal to end program with mem leaks
+
 TCPServer::TCPServer(int port) : _port(port) {
     std::cout << "TCPServer Default Constructor called" << std::endl;
     // I could also call getaddrinfo() to fill struct addrinfo
@@ -19,7 +24,7 @@ TCPServer::TCPServer(int port) : _port(port) {
 
     // AF_INET IPv4 vs IPv6
     // SOCK_STREAM FOR TCP vs UDP
-    // 0 chooses proper protocol for given type or getprotobyname to look protocol you want 
+    // 0 chooses proper protocol for given type or getprotobyname to look protocol you want
     if ((_server_socket_fd = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
         throw SocketCreationFailed();
     }
@@ -28,7 +33,7 @@ TCPServer::TCPServer(int port) : _port(port) {
     // to avoid bind() error "port already in use" when rerunning the server
     if (setsockopt(_server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
         throw SocketCreationFailed();
-    
+
     // bind the socket to the specified IP and Port
     // Where did I specify the IP?
     if (bind(_server_socket_fd, (struct sockaddr *)&_server_addr, sizeof _server_addr) < 0)
@@ -38,7 +43,7 @@ TCPServer::TCPServer(int port) : _port(port) {
     // they are being queued and limited to 20 connections
     if (listen(_server_socket_fd, 20) < 0)
         throw SocketCreationFailed();
-    
+
 
 } // Default Constructor
 
@@ -64,6 +69,7 @@ TCPServer::~TCPServer() {
 
 void TCPServer::wait_for_connection() {
     // To Do
+    // non-blocking read from socket with timeout
     const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
                         <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";
 
