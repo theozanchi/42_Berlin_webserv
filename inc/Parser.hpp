@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:24:42 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/12 16:32:26 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/12 18:33:50 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ using namespace std;
 class Configuration;
 
 enum blockType {
+	NO_BLOCK,
 	SERVER,
 	STD_LOCATION,
 	UPLOAD,
@@ -46,12 +47,14 @@ private:
 	static bool	isEmpty( const string& line );
 	static bool	isCommented( const string& line );	
 
+	static vector<string>	extractTokens( const string& line );
+
 	static string	extractKey( const string& line, size_t line_count );
 
 	static bool	isValidServerLine( const string& line );
-	static void	initServerBlock(Configuration& config, const string& line, size_t line_count );
+	static void	initServerBlock(Configuration& config, const string& line, size_t line_count, blockType** curr_block );
 
-	static void	parseLine( Configuration& config, const string& line, size_t line_count, blockType* block_type );
+	static void	parseLine( Configuration& config, const string& line, size_t line_count, blockType* curr_block );
 
 public:
 

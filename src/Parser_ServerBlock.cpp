@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 18:18:20 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/12 16:33:05 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/12 17:40:54 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,14 @@ bool	Parser::isValidServerLine( const string& line ) {
 	return (true);
 }
 
-void	Parser::initServerBlock( Configuration& config, const string& line, size_t line_count ) {
+void	Parser::initServerBlock( Configuration& config, const string& line, size_t line_count, blockType** curr_block ) {
 	if (!isValidServerLine(line)) {
 		stringstream ss;
 		ss << "Invalid server config at line " << line_count << ": " << line << endl;
 		ss << "Expected line format is \"server {\"";
 		throw (invalid_argument(ss.str()));
 	}
-	cout << "test1" << endl;
 	config.addServer();
-	cout << "test2" << endl;
+	**curr_block = SERVER;
 }
 
