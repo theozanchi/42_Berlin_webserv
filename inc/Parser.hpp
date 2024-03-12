@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:24:42 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/11 17:32:26 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/12 16:32:26 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,16 @@ private:
 	static bool	isEmpty( const string& line );
 	static bool	isCommented( const string& line );	
 
-	// static void	identifyBlockType( const string& line, blockType** block_type );
-
 	static string	extractKey( const string& line, size_t line_count );
 
-	static void	parseLine( Configuration* config, const string& line, size_t line_count, blockType* block_type );
+	static bool	isValidServerLine( const string& line );
+	static void	initServerBlock(Configuration& config, const string& line, size_t line_count );
+
+	static void	parseLine( Configuration& config, const string& line, size_t line_count, blockType* block_type );
 
 public:
 
-	static void	parseFile( Configuration* config, const char* file );
+	static void	parseFile( Configuration& config, const char* file );
 };
 
 #endif

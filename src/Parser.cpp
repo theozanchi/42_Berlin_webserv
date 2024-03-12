@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/11 17:58:21 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/12 16:32:38 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 set<string>	populateAuthorizedKeys( void ) {
 	set<string>	keys;
 	
+	keys.insert("server");
 	keys.insert("listen");
 	keys.insert("host");
 	keys.insert("server_name");
@@ -26,6 +27,10 @@ set<string>	populateAuthorizedKeys( void ) {
 	keys.insert("client_body_buffer_size");
 	keys.insert("client_body_timeout");
 	keys.insert("location");
+	keys.insert("allow");
+	keys.insert("index");
+	keys.insert("autoindex");
+	keys.insert("upload_store");
 
 	return (keys);
 }
@@ -104,10 +109,6 @@ bool	Parser::isCommented( const string& line ) {
 		return (false);
 }
 
-// void	Parser::identifyBlockType( const string& line, blockType** block_type ) {
-	
-// }
-
 string	Parser::extractKey( const string& line, size_t line_count ) {
 	size_t	begin = 0, first_space, first_tab, end;
 
@@ -122,24 +123,28 @@ string	Parser::extractKey( const string& line, size_t line_count ) {
 		ss << "Missing value after key at line " << line_count << ": " << line;
 		throw (invalid_argument(ss.str()));
 	}
-	
+
 	return (line.substr(begin, min(first_space, first_tab) - begin));
 }
 
-void	Parser::parseLine( Configuration* config, const string& line, size_t line_count, blockType* block_type ) {
+void	Parser::parseLine( Configuration& config, const string& line, size_t line_count, blockType* block_type ) {
 	if (isEmpty(line) || isCommented(line))
 		return ;
 
 	string	key = extractKey(line, line_count);
+	if (_authorizedKeys.find(key) == _authorizedKeys.end()) {
+		stringstream ss;
+		ss << "Invalid config at line " << line_count << ": \"" << key << "\" not supported";
+		throw (invalid_argument(ss.str()));
+	}
 	cout << key << endl;
-	(void)config;
-	(void)block_type;
-	// identifyBlockType(line, &block_type);
+	if (key == "server")
+		initServerBlock(config, line, line_count);
 }
 
 /* Public methods *********************************************************** */
 
-void	Parser::parseFile( Configuration* config, const char* file ) {
+void	Parser::parseFile( Configuration& config, const char* file ) {
 	ifstream	ifs;
 	string		line;
 	size_t		line_count = 1;

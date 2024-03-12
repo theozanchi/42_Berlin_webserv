@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 16:49:19 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/12 16:40:36 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,29 @@
 
 Server::Server() {}
 
-Server::Server( const Server& src ) { *this = src; }
+Server::Server( const Server& src )
+	:	_listen(src._listen),
+		_host(src._host),
+		_serverName(src._serverName),
+		_errorPage(src._errorPage),
+		_clientMaxBodySize(src._clientMaxBodySize),
+		_clientBodyInFileOnly(src._clientBodyInFileOnly),
+		_clientBodyBufferSize(src._clientBodyBufferSize),
+		_clientBodyTimeOut(src._clientBodyTimeOut),
+		_location(src._location)
+	{}
 
 Server& Server::operator=( const Server& src ) {
 	if (this != &src) {
-		*this = src;
+		_listen = src._listen;
+		_host = src._host;
+		_serverName = src._serverName;
+		_errorPage = src._errorPage;
+		_clientMaxBodySize = src._clientMaxBodySize;
+		_clientBodyInFileOnly = src._clientBodyInFileOnly;
+		_clientBodyBufferSize = src._clientBodyBufferSize;
+		_clientBodyTimeOut = src._clientBodyTimeOut;
+		_location = src._location;
 	}
 	return (*this);
 }

@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 18:59:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 11:25:45 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/12 16:26:54 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ public:
 	Configuration( const Configuration& src );
 	Configuration& operator=( const Configuration& src );
 	~Configuration();
+
+	void	addServer( void );
 };
 
 #endif

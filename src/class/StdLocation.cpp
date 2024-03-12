@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:52:21 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 14:52:55 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/12 16:45:36 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,15 @@
 
 StdLocation::StdLocation() : ALocation() {}
 
-StdLocation::StdLocation( const StdLocation& src ) : ALocation(src) { *this = src; }
+StdLocation::StdLocation( const StdLocation& src )
+	:	ALocation(src),
+		_index(src._index)
+	{}
 
 StdLocation& StdLocation::operator=( const StdLocation& src ) {
 	if (this != &src) {
-		*this = src;
+		ALocation::operator=(src);
+		_index = src._index;
 	}
 	return (*this);
 }

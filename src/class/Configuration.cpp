@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 19:00:06 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 16:46:32 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/12 16:39:49 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,13 @@
 
 Configuration::Configuration() {}
 
-Configuration::Configuration( const Configuration& src ) { *this = src; }
+Configuration::Configuration( const Configuration& src )
+	:	_server( src._server )
+	{}
 
 Configuration& Configuration::operator=( const Configuration& src ) {
 	if (this != &src) {
-		*this = src;
+		_server = src._server;
 	}
 	return (*this);
 }
@@ -29,3 +31,7 @@ Configuration& Configuration::operator=( const Configuration& src ) {
 Configuration::~Configuration() {}
 
 /* Member functions ********************************************************* */
+
+void	Configuration::addServer( void ) {
+	_server.push_back(Server());
+}

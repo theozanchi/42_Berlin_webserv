@@ -6,7 +6,7 @@
 #    By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/06 11:40:43 by tzanchi           #+#    #+#              #
-#    Updated: 2024/03/11 17:34:22 by tzanchi          ###   ########.fr        #
+#    Updated: 2024/03/11 19:23:58 by tzanchi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,7 @@ SRC			=	class/ALocation.cpp \
 				class/Upload.cpp \
 				\
 				main.cpp \
+				Parser_ServerBlock.cpp \
 				Parser.cpp
 
 SRCS		=	$(addprefix ${SRCS_DIR}, ${SRC})

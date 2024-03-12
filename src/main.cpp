@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:42:06 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/11 12:49:29 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/12 16:32:13 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	main( int argc, char **argv ) {
 		cerr << "Invalid argument: only one configuration file accepted (optional)" << endl;
 	}
 	else {
-		Configuration*	config = new Configuration();
+		Configuration	config;
 	
 		try {
 			Parser::parseFile(config, "config/default.conf");
