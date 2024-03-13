@@ -34,3 +34,6 @@ webserv
 
 # Debugging
 .vscode*
+
+# MacOS desctop config
+.DS_Store

@@ -30,7 +30,8 @@ NC			=	\033[0m
 BOLD		=	\033[1m
 TICK		=	✓
 
-SRC			=	main.cpp
+SRC			=	main_request.cpp \
+				Request.cpp
 
 SRCS		=	$(addprefix ${SRCS_DIR}, ${SRC})
 SRC_NR		=	$(words ${SRCS})
@@ -43,8 +44,8 @@ ${NAME}:		entry_message ${OBJS}
 				@if [ -e ${NAME} ] && [ "$(shell find ${OBJ_DIR} -newer ${NAME} 2>/dev/null)" = "" ]; then \
 					echo "Nothing to do\n"; \
 				else \
-					@${CC} ${CFLAGS} ${OBJS} -o ${NAME}; \
-					@echo "${YELLOW}\nCompilation complete, ${NAME} executable at the root of the directory${NC}\n";\
+					${CC} ${CFLAGS} ${OBJS} -o ${NAME}; \
+					echo "${YELLOW}\nCompilation complete, ${NAME} executable at the root of the directory${NC}\n";\
 				fi
 
 $(OBJ_DIR)/%.o:	$(SRCS_DIR)%.cpp
