@@ -35,5 +35,8 @@ webserv
 # Debugging
 .vscode*
 
+# Clion files
+.idea/
+
 # MacOS desctop config
 .DS_Store
