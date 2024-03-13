@@ -2,11 +2,23 @@
 
 int main (int ac, char **av)
 {
-	(void)ac;
+//	if (ac < 2)
+//	{
+//		std::cout << "No request." << std::endl;
+//		return (0);
+//	}
+	(void) ac;
 	std::string httpRequest = av[1];
-	Request newRequest(httpRequest);
+	try {
+		Request newRequest(httpRequest);
 
-	std::cout << "Ok" << std::endl;
+		std::cout << "OK" << std::endl;
+	}
+
+	catch (std::exception &e)
+	{
+		std::cout << "KO " << e.what() << std::endl;
+	}
 
 	return (0);
 }
