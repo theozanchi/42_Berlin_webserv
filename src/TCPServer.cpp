@@ -5,7 +5,7 @@
 // all will call the wait for connection function that will keep track of the client fds?
 // implement the Crtl + C Signal to end program with mem leaks
 
-TCPServer::TCPServer(int port) : _port(port) {
+TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
     std::cout << "TCPServer Default Constructor called" << std::endl;
     // I could also call getaddrinfo() to fill struct addrinfo
     // not sure if it fill in struct sockaddr as well
@@ -13,38 +13,52 @@ TCPServer::TCPServer(int port) : _port(port) {
     // You use getaddrinfo() to do nameserver DNS lookup on hostname like "www.example.com"
     // https://beej.us/guide/bgnet/html/#port-numbers
     // sin_family Address Family
-    _server_addr.sin_family = AF_INET;
-    // sin_addr Internet Address in Network Byte Order
-    // INADDR_ANY use my IPv4 address
-    _server_addr.sin_addr.s_addr = INADDR_ANY;
-    // sin_port Port Number in Network Byte Order
-    // htons() converts values btw host and network byte order
-    _server_addr.sin_port = htons(_port);
-    std::memset(_server_addr.sin_zero, '\0', sizeof _server_addr.sin_zero);
-
-    // AF_INET IPv4 vs IPv6
-    // SOCK_STREAM FOR TCP vs UDP
-    // 0 chooses proper protocol for given type or getprotobyname to look protocol you want
-    if ((_server_socket_fd = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-        throw SocketCreationFailed();
-    }
-
+    // each port needs its own socket and therefore data structure and fd
+    _server_addr = new struct sockaddr_in[nb_of_ports];
+    _server_socket_fd = new int[nb_of_ports];
+    _ports = new int[nb_of_ports];
     int yes = 1;
-    // to avoid bind() error "port already in use" when rerunning the server
-    if (setsockopt(_server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
-        throw SocketCreationFailed();
 
-    // bind the socket to the specified IP and Port
-    // Where did I specify the IP?
-    if (bind(_server_socket_fd, (struct sockaddr *)&_server_addr, sizeof _server_addr) < 0)
-        throw SocketCreationFailed();
+    for (int i = 0; i < nb_of_ports; i++)
+    {
+        _ports[i] = ports[i];
+        _server_addr[i].sin_family = AF_INET;
+        // sin_addr Internet Address in Network Byte Order
+        // INADDR_ANY use my IPv4 address
+        _server_addr[i].sin_addr.s_addr = INADDR_ANY;
+        // sin_port Port Number in Network Byte Order
+        // htons() converts values btw host and network byte order
+        _server_addr[i].sin_port = htons(_ports[i]);
+        std::memset(_server_addr[i].sin_zero, '\0', sizeof _server_addr[i].sin_zero);
+    
+        // AF_INET IPv4 vs IPv6
+        // SOCK_STREAM FOR TCP vs UDP
+        // 0 chooses proper protocol for given type or getprotobyname to look protocol you want
+        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+            throw SocketCreationFailed();
+        }
+    
+        // to avoid bind() error "port already in use" when rerunning the server
+        if (setsockopt(_server_socket_fd[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
+            throw SocketCreationFailed();
 
-    // wait for incoming connections
-    // they are being queued and limited to 20 connections
-    if (listen(_server_socket_fd, 20) < 0)
-        throw SocketCreationFailed();
+        // use ioctl() API to set socket to be nonblocking
+        // all sockets for the incoming inherit the nonblocking state from the listening socket
+        // see IBM for that, I don't think subject allows this function?
+        if (ioctl(_server_socket_fd[i], FIONBIO, &yes) < 0)
+            throw SocketCreationFailed();
 
+        // bind the socket to the specified IP and Port
+        // Where did I specify the IP?
+        if (bind(_server_socket_fd[i], (struct sockaddr *)&_server_addr[i], sizeof _server_addr[i]) < 0)
+            throw SocketCreationFailed();
 
+        // wait for incoming connections
+        // they are being queued and limited to 20 connections
+        if (listen(_server_socket_fd[i], 20) < 0)
+            throw SocketCreationFailed();
+        
+    }
 } // Default Constructor
 
 TCPServer::TCPServer(TCPServer const& cpy) {
@@ -60,10 +74,14 @@ TCPServer TCPServer::operator= (TCPServer const& cpy) {
     // To Do
 } // Copy Assignment Operator
 
+// We need to handle Ctrl+C Signal to exit pgm in clean way 
 TCPServer::~TCPServer() {
     std::cout << "TCPServer Destructor called" << std::endl;
-    close(_client_socket_fd);
-    close(_server_socket_fd);
+    delete [] _server_socket_fd;
+    delete [] _server_addr;
+    delete [] _ports;
+    //close(_client_socket_fd);
+   // close(_server_socket_fd);
     //freeaddrinfo(return value of getaddrinfo)
 } // Destructor
 
@@ -76,7 +94,35 @@ void TCPServer::wait_for_connection() {
     _client_addr_size = sizeof _client_addr;
     while (true)
     {
-        _client_socket_fd = accept(_server_socket_fd, (struct sockaddr *)&_client_addr, &_client_addr_size);
-        send(_client_socket_fd, msg, std::strlen(msg), 0); // send http response for testing
+        for (int i = 0; i < _nb_of_ports; i++)
+        {
+            _client_socket_fd = accept(_server_socket_fd[i], (struct sockaddr *)&_client_addr, &_client_addr_size);
+            send(_client_socket_fd, msg, std::strlen(msg), 0); // send http response for testing
+        }
+    }
+}
+
+void TCPServer::accept_connections() {
+    // To Do
+    // ibm.com/docs/en/i/7.4?topic=designs-using-poll-instead-select
+    // IBM using poll() instead of select()
+    // poll() API allows the process to wait for an event to occur
+    // then wakes up the process 
+    // return values of poll()
+    // 0 indicates process time out.
+    // -1 indicates process has failed
+    // 1 indicates only one fd is ready to be processed and is processed only if it is server(listening) socket
+    // 1++ multiple fds are waiting to be processed. poll() API allows simultaneous connection with all fd in the queue on the listening socket
+    // accept() and recv() APIs are completed when the EWOULDBLOCK is returned
+
+    // initialize the pollfd structure
+    std::memset(_poll_fds, '\0', sizeof _poll_fds);
+
+    // set up the initial listening sockets
+    for (int i = 0; i < _nb_of_ports; i++)
+    {
+        _poll_fds[i].fd = _server_socket_fd[i];
+        _poll_fds[i].events = POLLIN;
+        
     }
 }
