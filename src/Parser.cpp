@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/12 18:40:56 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/13 11:57:54 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,10 +109,14 @@ bool	Parser::isCommented( const string& line ) {
 		return (false);
 }
 
-vector<string>	Parser::extractTokens( const string& line ) {
+vector<string>	Parser::extractTokens( const string& line, size_t line_count ) {
 	vector<string>	tokens;
+	ostringstream	oss;
 	istringstream	iss(line);
 	string			token;
+
+	oss << line_count;
+	tokens.push_back(oss.str());
 
 	while (iss >> token) {
 		tokens.push_back(token);
@@ -121,37 +125,19 @@ vector<string>	Parser::extractTokens( const string& line ) {
 	return (tokens);
 }
 
-string	Parser::extractKey( const string& line, size_t line_count ) {
-	size_t	begin = 0, first_space, first_tab, end;
-
-	while (isspace(line[begin]))
-		begin++;
-
-	first_space = line.find(' ', begin);
-	first_tab = line.find('\t', begin);
-
-	if (first_space == string::npos && first_tab == string::npos) {
-		stringstream ss;
-		ss << "Missing value after key at line " << line_count << ": " << line;
-		throw (invalid_argument(ss.str()));
-	}
-
-	return (line.substr(begin, min(first_space, first_tab) - begin));
-}
-
 void	Parser::parseLine( Configuration& config, const string& line, size_t line_count, blockType* curr_block ) {
 	if (isEmpty(line) || isCommented(line))
 		return ;
 
-	vector<string>	tokens = extractTokens(line);
-	
-	if (_authorizedKeys.find(tokens.front()) == _authorizedKeys.end()) {
+	vector<string>	tokens = extractTokens(line, line_count);
+
+	if (_authorizedKeys.find(tokens.at(1)) == _authorizedKeys.end()) {
 		stringstream ss;
-		ss << "Invalid config at line " << line_count << ": \"" << tokens.front() << "\" not supported";
+		ss << "Invalid config at line " << tokens.at(0) << ": \"" << tokens.at(1) << "\" not supported";
 		throw (invalid_argument(ss.str()));
 	}
-	if (tokens.front() == "server")
-		initServerBlock(config, line, line_count, &curr_block);
+	if (tokens.at(1) == "server")
+		initServerBlock(config, tokens, &curr_block);
 }
 
 /* Public methods *********************************************************** */

@@ -6,33 +6,23 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 18:18:20 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/12 17:40:54 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/13 11:57:20 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 
-bool	Parser::isValidServerLine( const string& line ) {
-	size_t i = line.find("server") + 6;
-
-	while (line[i] && isspace(line[i]))
-		++i;
-	if (line[i] != '{')
+bool	Parser::isValidServerLine( vector<string>& tokens ) {
+	if (tokens.size() != 3 || tokens.at(2) != "{")
 		return (false);
-	++i;
-	while (line[i]) {
-		if (!isspace(line[i]))
-			return (false);
-		++i;
-	}
-	return (true);
+	else
+		return (true);
 }
 
-void	Parser::initServerBlock( Configuration& config, const string& line, size_t line_count, blockType** curr_block ) {
-	if (!isValidServerLine(line)) {
+void	Parser::initServerBlock( Configuration& config, vector<string>& tokens, blockType** curr_block ) {
+	if (!isValidServerLine(tokens)) {
 		stringstream ss;
-		ss << "Invalid server config at line " << line_count << ": " << line << endl;
-		ss << "Expected line format is \"server {\"";
+		ss << "Invalid server config at line " << tokens.at(0) << ", expected format is \"server {\"" << endl;
 		throw (invalid_argument(ss.str()));
 	}
 	config.addServer();
