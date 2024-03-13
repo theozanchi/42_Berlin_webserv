@@ -12,10 +12,9 @@ int main() {
     int nb_of_ports = 3;
 
     TCPServer aServer(port, nb_of_ports);
-    //TCPServer bServer(9002);
 
-    aServer.wait_for_connection();
-    //bServer.wait_for_connection();
+    //aServer.wait_for_connection();
+    aServer.accept_connections();
 
     return 0;
 }

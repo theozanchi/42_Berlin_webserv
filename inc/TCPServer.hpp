@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 #include <exception>
 #include <unistd.h>
+#include <cerrno>
 
 class TCPServer {
 private:
@@ -26,6 +27,7 @@ private:
 	int	_timeout;
 
 	int	_client_socket_fd;
+	int _client_count;
 	struct sockaddr_storage _client_addr;
 	socklen_t _client_addr_size;
 
