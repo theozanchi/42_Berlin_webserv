@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 17:57:09 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/14 11:58:58 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,15 @@ public:
 	Server( const Server& src );
 	Server& operator=( const Server& src );
 	~Server();
+
+	void	setListen( const vector<string>& tokens );
+	void	setHost( const vector<string>& tokens );
+	void	setServerName( const vector<string>& tokens );
+	void	setErrorPage( const vector<string>& tokens );
+	void	setClientMaxBodySize( const vector<string>& tokens );
+	void	setClientBodyInFileOnly( const vector<string>& tokens );
+	void	setClientBodyBufferSize( const vector<string>& tokens );
+	void	setClientBodyTimeOut( const vector<string>& tokens );
 };
 
 #endif

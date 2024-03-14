@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/13 11:57:54 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/14 18:54:04 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,23 @@
 
 /* Private attributes ******************************************************* */
 
-set<string>	populateAuthorizedKeys( void ) {
-	set<string>	keys;
+map<string, void (Server::*)(const vector<string>&)>	populateKeys( void ) {
+	map<string, void (Server::*)(const vector<string>&)>	keys;
 	
-	keys.insert("server");
-	keys.insert("listen");
-	keys.insert("host");
-	keys.insert("server_name");
-	keys.insert("error_page");
-	keys.insert("client_max_body_size");
-	keys.insert("client_body_in_file_only");
-	keys.insert("client_body_buffer_size");
-	keys.insert("client_body_timeout");
-	keys.insert("location");
-	keys.insert("allow");
-	keys.insert("index");
-	keys.insert("autoindex");
-	keys.insert("upload_store");
+	keys["server"] = NULL;
+	keys["listen"] = &Server::setListen;
+	keys["host"] = &Server::setHost;
+	keys["server_name"] = &Server::setServerName;
+	keys["error_page"] = &Server::setErrorPage;
+	keys["client_max_body_size"] = &Server::setClientMaxBodySize;
+	keys["client_body_in_file_only"] = &Server::setClientMaxBodySize;
+	keys["client_body_buffer_size"] = &Server::setClientBodyBufferSize;
+	keys["client_body_timeout"] = &Server::setClientBodyTimeOut;
+	keys["location"] = NULL;
+	keys["allow"] = NULL;
+	keys["index"] = NULL;
+	keys["autoindex"] = NULL;
+	keys["upload_store"] = NULL;
 
 	return (keys);
 }
@@ -62,7 +62,7 @@ set<string>	populateCGIKeys( void ) {
 	return (keys);
 };
 
-const set<string>	Parser::_authorizedKeys = populateAuthorizedKeys();
+const map<string, void (Server::*)(const vector<string>&)>	Parser::_keys = populateKeys();
 const set<string>	Parser::_authorizedStdLocationKeys = populateStdLocationKeys();
 const set<string>	Parser::_authorizedUploadKeys = populateUploadKeys();
 const set<string>	Parser::_authorizedCGIKeys = populateCGIKeys();
@@ -125,19 +125,57 @@ vector<string>	Parser::extractTokens( const string& line, size_t line_count ) {
 	return (tokens);
 }
 
+void	Parser::checkForWrongSemiColon( vector<string>* tokens ) {
+	for (vector<string>::iterator it = tokens->begin() + 1; it < tokens->end(); ++it) {
+		size_t semicolon = (*it).find(';');
+
+		if (semicolon != string::npos) {
+			if (semicolon != (*it).length() - 1) {
+				stringstream ss;
+				ss << "Invalid config at line " << tokens->at(0) << ": semi-colon not at the end-of-line";
+				throw (invalid_argument(ss.str()));
+			}
+		}
+	}
+}
+
+void	Parser::checkAndTrimSemiColon( vector<string>* tokens ) {
+	vector<string>::reverse_iterator rit = tokens->rbegin();
+	
+	if (tokens->at(1) == "server" || tokens->at(1) == "location")
+		return ;
+	checkForWrongSemiColon(tokens);
+	if (*rit == ";") {
+		tokens->erase(next(rit).base());	//Converting the reverse iterator into a forward one
+	}
+	else if ((*rit).back() == ';') {
+		*rit = (*rit).substr(0, (*rit).length() - 1);
+	}
+	else {
+		stringstream ss;
+		ss << "Invalid config at line " << tokens->at(0) << ": missing semi-colon at end-of-line";
+		throw (invalid_argument(ss.str())); 
+	}
+}
+
 void	Parser::parseLine( Configuration& config, const string& line, size_t line_count, blockType* curr_block ) {
 	if (isEmpty(line) || isCommented(line))
 		return ;
 
 	vector<string>	tokens = extractTokens(line, line_count);
 
-	if (_authorizedKeys.find(tokens.at(1)) == _authorizedKeys.end()) {
+	if (_keys.find(tokens.at(1)) == _keys.end()) {
 		stringstream ss;
 		ss << "Invalid config at line " << tokens.at(0) << ": \"" << tokens.at(1) << "\" not supported";
 		throw (invalid_argument(ss.str()));
 	}
 	if (tokens.at(1) == "server")
 		initServerBlock(config, tokens, &curr_block);
+	else
+		checkAndTrimSemiColon(&tokens);
+	for (vector<string>::iterator it = tokens.begin(); it < tokens.end(); ++it)
+		cout << *it << " ";
+	cout << endl;
 }
 
 /* Public methods *********************************************************** */

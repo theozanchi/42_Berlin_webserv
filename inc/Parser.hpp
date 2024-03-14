@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:24:42 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/13 11:26:31 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/14 18:54:14 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 using namespace std;
 
 class Configuration;
+class Server;
 
 enum blockType {
 	NO_BLOCK,
@@ -37,10 +38,10 @@ private:
 	Parser() {}
 	~Parser() {}
 
-	static const set<string>	_authorizedKeys;
-	static const set<string>	_authorizedStdLocationKeys;
-	static const set<string>	_authorizedUploadKeys;
-	static const set<string>	_authorizedCGIKeys;
+	static const map<string, void (Server::*)(const vector<string>&)>	_keys;
+	static const set<string>											_authorizedStdLocationKeys;
+	static const set<string>											_authorizedUploadKeys;
+	static const set<string>											_authorizedCGIKeys;
 
 	static bool	checkCurlyBrackets( ifstream& ifs );
 
@@ -49,8 +50,11 @@ private:
 
 	static vector<string>	extractTokens( const string& line, size_t line_count );
 
+	static void	checkForWrongSemiColon( vector<string>* tokens );
+	static void	checkAndTrimSemiColon( vector<string>* tokens );
+
 	static bool	isValidServerLine( vector<string>& tokens );
-	static void	initServerBlock(Configuration& config, vector<string>& tokens, blockType** curr_block );
+	static void	initServerBlock( Configuration& config, vector<string>& tokens, blockType** curr_block );
 
 	static void	parseLine( Configuration& config, const string& line, size_t line_count, blockType* curr_block );
 
