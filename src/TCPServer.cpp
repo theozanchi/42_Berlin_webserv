@@ -5,7 +5,7 @@
 // all will call the wait for connection function that will keep track of the client fds?
 // implement the Crtl + C Signal to end program with mem leaks
 
-TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _timeout(30 * 1000), _client_socket_fd(-1), _client_count(0) {
+TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _timeout(3 * 60 * 1000), _client_socket_fd(-1), _client_count(0) {
     std::cout << "TCPServer Default Constructor called" << std::endl;
     // I could also call getaddrinfo() to fill struct addrinfo
     // not sure if it fill in struct sockaddr as well
@@ -33,8 +33,8 @@ TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _
 
         // AF_INET IPv4 vs IPv6
         // SOCK_STREAM FOR TCP vs UDP
-        // 0 chooses proper protocol for given type or getprotobyname to look protocol you want
-        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+        // SOCK_NONBLOCK to set socket in non-blocking mode
+        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) < 0) {
             throw SocketCreationFailed();
         }
 
@@ -42,20 +42,14 @@ TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _
         if (setsockopt(_server_socket_fd[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
             throw SocketCreationFailed();
 
-        // use ioctl() API to set socket to be nonblocking
-        // all sockets for the incoming inherit the nonblocking state from the listening socket
-        // see IBM for that, subject doesnt allow this function!
-        //if (ioctl(_server_socket_fd[i], FIONBIO, &yes) < 0)
-          //  throw SocketCreationFailed();
-
         // bind the socket to the specified IP and Port
         // Where did I specify the IP?
         if (bind(_server_socket_fd[i], (struct sockaddr *)&_server_addr[i], sizeof _server_addr[i]) < 0)
             throw SocketCreationFailed();
 
         // wait for incoming connections
-        // they are being queued and limited to 20 connections
-        if (listen(_server_socket_fd[i], 20) < 0)
+        // they are being queued and limited to system max connections
+        if (listen(_server_socket_fd[i], SOMAXCONN) < 0)
             throw SocketCreationFailed();
 
     }
@@ -114,35 +108,51 @@ void TCPServer::accept_connections() {
     // 1 indicates only one fd is ready to be processed and is processed only if it is server(listening) socket
     // 1++ multiple fds are waiting to be processed. poll() API allows simultaneous connection with all fd in the queue on the listening socket
     // accept() and recv() APIs are completed when the EWOULDBLOCK is returned
+    // The IBM version is a blocking I/O operation
+    const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
+                        <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";
 
+    //https://www.linuxtoday.com/blog/multiplexed-i0-with-poll/
     // flag to stop server
     bool    end_server = false;
-    int     poll_rt_val = 1;
+    int     rt_val, len = 1;
+    bool    close_conn;
+    char    buffer[80];
 
     // initialize the pollfd structure
     std::memset(_poll_fds, '\0', sizeof _poll_fds);
 
     // set up the initial listening sockets
+    // maybe I have to call the accept_connection on each server socket?
+    // POLLIN | POLLOUT will monitor single fd for reading and writing
     for (int i = 0; i < _nb_of_ports; i++)
     {
         _poll_fds[i].fd = _server_socket_fd[i];
-        _poll_fds[i].events = POLLIN;
-
+        _poll_fds[i].events = POLLIN; // listening sockets
+        // on return from poll()
+        //_poll_fds[i].revents will be filled with same POLLIN POLLOUT values
+        // indicating which of the interesting events the fd is ready for
+        // OR POLLERR POLLHUP POLLNVAL on error
     }
 
-    while (end_server == false)
+    // n_poll_fds will keep track of the nb of fds in struct pollfd
+    int n_poll_fds;
+
+    do
     {
-        poll_rt_val = poll(_poll_fds, _nb_of_ports, _timeout);
-        if (poll_rt_val < 0)
+        // monitor the listening fds for readiness for reading
+        n_poll_fds = _nb_of_ports;
+        rt_val = poll(_poll_fds, n_poll_fds, _timeout);
+        if (rt_val < 0)
         {
             std::cout << "poll() failed" << std::endl;
             break ;
         }
         // check if the time limit is reached
-        if (poll_rt_val == 0)
+        if (rt_val == 0)
         {
             std::cout << "poll() timed out" << std::endl;
-            break;
+            break ;
         }
 
         // one or more fds are readable. Need to determine which ones
@@ -162,16 +172,17 @@ void TCPServer::accept_connections() {
 
             // not sure if the arrays actually stay synched
             // maybe I have to compare it to each possible _server_socket_fd
-            if (_poll_fds[i].fd == _server_socket_fd[i])
+            if (_poll_fds[i].fd == _server_socket_fd[0])
             {
-                std::cout << "Server Socket " << _server_socket_fd[i] << " is readable" << std::endl;
+                std::cout << "Server Socket " << _server_socket_fd[0] << " is readable" << std::endl;
 
                 // accept all incoming connections
                 // they are queued up on the listening socket
                 // before we loop back and call poll again
                 do
                 {
-                    _client_socket_fd = accept(_server_socket_fd[i], NULL, NULL);
+                    _client_socket_fd = accept(_server_socket_fd[0], NULL, NULL);
+                    //what about getsockname()?
                     if (_client_socket_fd < 0)
                     {
                         // errno = EWOULDBLOCK is good it means
@@ -194,8 +205,57 @@ void TCPServer::accept_connections() {
                     // loop back up and accept another incoming connection
                 } while (_client_socket_fd != -1);
             }
+            else
+            {
+                // it is not the listening socket
+                // therefor an existing connection must be readable
+                std::cout << "Client Socket " << _poll_fds[i].fd << " is readable" << std::endl;
+                close_conn = false;
+
+                // receive all incoming data on this socket
+                // before we loop back and call poll again
+                while(true)
+                {
+                    rt_val = recv(_poll_fds[i].fd, buffer, sizeof buffer, 0);
+                    if (rt_val < 0)
+                    {
+                        if (errno != EWOULDBLOCK)
+                        {
+                            std::cout << " recv() failed" << std::endl;
+                            close_conn = true;
+                        }
+                        break ;
+                    }
+
+                    // check if client has been closed by client
+                    if (rt_val == 0)
+                    {
+                        std::cout << " Connection closed" << std::endl;
+                        close_conn = true;
+                        break ;
+                    }
+
+                    // Data was received
+                    len = rt_val;
+                    std::cout << len << " bytes received" << std::endl;
+                    rt_val = send(_poll_fds[i].fd, msg, std::strlen(msg), 0);
+                    if (rt_val < 0)
+                    {
+                        std::cout << " send() failed" << std::endl;
+                        close_conn = true;
+                        break ;
+                    }
+                }
+
+                // if close_conn true
+                // need to clean up active connection
+                // removing fd
+
+            }
+
+
         }
 
 
-    }
+    } while (end_server == false);
 }

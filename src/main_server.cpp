@@ -8,13 +8,13 @@
 
 
 int main() {
-    int port[3] = { 8080 , 9002 , 8090 };
-    int nb_of_ports = 3;
+    int port[1] = { 8080 };
+    int nb_of_ports = 1;
 
     TCPServer aServer(port, nb_of_ports);
 
-    //aServer.wait_for_connection();
-    aServer.accept_connections();
+    aServer.wait_for_connection();
+    //aServer.accept_connections();
 
     return 0;
 }
