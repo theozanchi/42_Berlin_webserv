@@ -6,15 +6,11 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/14 11:59:45 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/15 16:12:27 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include "ALocation.hpp"
-#include "StdLocation.hpp"
-#include "Upload.hpp"
-#include "CGI.hpp"
+#include "webserv.hpp"
 
 /* Constructors, assignment operator and destructor ************************* */
 
@@ -52,25 +48,25 @@ Server::~Server() {}
 /* Setters ****************************************************************** */
 
 void	Server::setListen( const vector<string>& tokens ) {
-	for (vector<string>::const_iterator it = tokens.begin(); it < tokens.end(); ++it) {
+	for (vector<string>::const_iterator it = tokens.begin() + 1; it < tokens.end(); ++it) {
 		_listen.push_back(stoi(*it));
 	}
 }
 
 void	Server::setHost( const vector<string>& tokens ) {
-	for (vector<string>::const_iterator it = tokens.begin(); it < tokens.end(); ++it) {
+	for (vector<string>::const_iterator it = tokens.begin() + 1; it < tokens.end(); ++it) {
 		_host.push_back(*it);
 	}
 }
 
 void	Server::setServerName( const vector<string>& tokens ) {
-	for (vector<string>::const_iterator it = tokens.begin(); it < tokens.end(); ++it) {
+	for (vector<string>::const_iterator it = tokens.begin() + 1; it < tokens.end(); ++it) {
 		_serverName.push_back(*it);
 	}
 }
 
 void	Server::setErrorPage( const vector<string>& tokens ) {
-	for (vector<string>::const_iterator it = tokens.begin(); it < tokens.end() - 1; ++it) {
+	for (vector<string>::const_iterator it = tokens.begin() + 1; it < tokens.end() - 1; ++it) {
 		_errorPage.insert(make_pair(stoi(*it), tokens.back()));
 	}
 }
@@ -89,4 +85,28 @@ void	Server::setClientBodyBufferSize( const vector<string>& tokens ) {
 
 void	Server::setClientBodyTimeOut( const vector<string>& tokens ) {
 	_clientBodyTimeOut = stoi(tokens.at(1));
+}
+
+void	Server::addLocation( const vector<string>& tokens ) {
+	if (tokens.at(1).front() == '~')
+		_location[tokens.at(1)] = Cgi();
+	else if (tokens.at(1).find("upload") != string::npos)
+		_location[tokens.at(1)] = Upload();
+	else
+		_location[tokens.at(1)] = StdLocation();
+	
+	_location[tokens.at(1)].setPath(tokens);
+}
+
+ALocation&	Server::getLocation( const string& path_or_flag ) {
+	if (_location.find(path_or_flag) != _location.end()) {
+		return (_location[path_or_flag]);
+	}
+	else if (path_or_flag == "LAST") {
+		map<string, ALocation&>::reverse_iterator rit = _location.rbegin();
+		return (rit->second);
+	}
+	else {
+		throw (invalid_argument("Invalid argument for getLocation()"));
+	}
 }

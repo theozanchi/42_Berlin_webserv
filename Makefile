@@ -6,7 +6,7 @@
 #    By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/06 11:40:43 by tzanchi           #+#    #+#              #
-#    Updated: 2024/03/11 19:23:58 by tzanchi          ###   ########.fr        #
+#    Updated: 2024/03/15 13:38:09 by tzanchi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ BOLD		=	\033[1m
 TICK		=	✓
 
 SRC			=	class/ALocation.cpp \
-				class/CGI.cpp \
+				class/Cgi.cpp \
 				class/Configuration.cpp \
 				class/Server.cpp \
 				class/StdLocation.cpp \

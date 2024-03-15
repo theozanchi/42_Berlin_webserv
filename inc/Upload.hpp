@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:46:25 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 14:50:11 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/15 10:54:18 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ public:
 	Upload( const Upload& src );
 	Upload& operator=( const Upload& src );
 	~Upload();
+
+	void	setUploadStore( const vector<string>& tokens );
 };
 
 #endif

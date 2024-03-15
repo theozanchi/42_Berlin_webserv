@@ -6,11 +6,11 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:52:21 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/12 16:45:36 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/15 10:55:20 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "StdLocation.hpp"
+#include "webserv.hpp"
 
 /* Constructors, assignment operator and destructor ************************* */
 
@@ -32,3 +32,12 @@ StdLocation& StdLocation::operator=( const StdLocation& src ) {
 StdLocation::~StdLocation() {}
 
 /* Member functions ********************************************************* */
+
+void	StdLocation::setIndex( const vector<string>& tokens ) {
+	string	index = tokens.at(1);
+
+	if ((index.front() == '\'' || index.front() == '\"')
+		&& index.front() == index.back())
+		index = index.substr(1, index.length() - 2);
+	_index = index;
+}

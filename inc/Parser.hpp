@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:24:42 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/14 18:54:14 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/15 13:32:32 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ private:
 	Parser() {}
 	~Parser() {}
 
-	static const map<string, void (Server::*)(const vector<string>&)>	_keys;
-	static const set<string>											_authorizedStdLocationKeys;
-	static const set<string>											_authorizedUploadKeys;
-	static const set<string>											_authorizedCGIKeys;
+	static const map<string, void (Server::*)(const vector<string>&)>		_serverKeys;
+	static const map<string, void (StdLocation::*)(const vector<string>&)>	_stdLocationKeys;
+	static const map<string, void (Upload::*)(const vector<string>&)>		_uploadKeys;
+	static const map<string, void (Cgi::*)(const vector<string>&)>			_CgiKeys;
 
 	static bool	checkCurlyBrackets( ifstream& ifs );
 
@@ -56,10 +56,11 @@ private:
 	static bool	isValidServerLine( vector<string>& tokens );
 	static void	initServerBlock( Configuration& config, vector<string>& tokens, blockType** curr_block );
 
+	static void	populateAttribute( Configuration& config, const vector<string>& tokens );
+
 	static void	parseLine( Configuration& config, const string& line, size_t line_count, blockType* curr_block );
 
 public:
-
 	static void	parseFile( Configuration& config, const char* file );
 };
 

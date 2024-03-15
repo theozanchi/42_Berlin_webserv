@@ -1,28 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   CGI.hpp                                            :+:      :+:    :+:   */
+/*   Cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/07 11:41:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/07 16:03:33 by tzanchi          ###   ########.fr       */
+/*   Created: 2024/03/07 14:46:37 by tzanchi           #+#    #+#             */
+/*   Updated: 2024/03/15 12:32:28 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CGI_HPP
-# define CGI_HPP
+#include "Cgi.hpp"
 
-# include "ALocation.hpp"
+/* Constructors, assignment operator and destructor ************************* */
 
-class CGI : public ALocation {
-private:
+Cgi::Cgi() : ALocation() {}
 
-public:
-	CGI();
-	CGI( const CGI& src );
-	CGI& operator=( const CGI& src );
-	~CGI();
-};
+Cgi::Cgi( const Cgi& src ) : ALocation(src) {}
 
-#endif
+Cgi& Cgi::operator=( const Cgi& src ) {
+	if (this != &src) {
+		ALocation::operator=(src);
+	}
+	return (*this);
+}
+
+Cgi::~Cgi() {}
+
+/* Member functions ********************************************************* */

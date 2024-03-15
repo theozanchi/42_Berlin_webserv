@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/14 18:54:04 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/15 16:18:21 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,9 @@
 
 /* Private attributes ******************************************************* */
 
-map<string, void (Server::*)(const vector<string>&)>	populateKeys( void ) {
-	map<string, void (Server::*)(const vector<string>&)>	keys;
+map<string, void (Server::*)(const vector<string>&)> populateServerKeys( void ) {
+	map<string, void (Server::*)(const vector<string>&)> keys;
 	
-	keys["server"] = NULL;
 	keys["listen"] = &Server::setListen;
 	keys["host"] = &Server::setHost;
 	keys["server_name"] = &Server::setServerName;
@@ -26,46 +25,44 @@ map<string, void (Server::*)(const vector<string>&)>	populateKeys( void ) {
 	keys["client_body_in_file_only"] = &Server::setClientMaxBodySize;
 	keys["client_body_buffer_size"] = &Server::setClientBodyBufferSize;
 	keys["client_body_timeout"] = &Server::setClientBodyTimeOut;
-	keys["location"] = NULL;
-	keys["allow"] = NULL;
-	keys["index"] = NULL;
-	keys["autoindex"] = NULL;
-	keys["upload_store"] = NULL;
+	keys["location"] = &Server::addLocation;
 
 	return (keys);
 }
 
-set<string>	populateStdLocationKeys( void ) {
-	set<string>	keys;
+map<string, void (StdLocation::*)(const vector<string>&)> populateStdLocationKeys( void ) {
+	map<string, void (StdLocation::*)(const vector<string>&)> keys;
+
+	keys["location"] = &ALocation::setPath;
+	keys["allow"] = &ALocation::setAllow;
+	keys["autoindex"] = &ALocation::setAutoIndex;
+	keys["index"] = &StdLocation::setIndex;
+}
+
+map<string, void (Upload::*)(const vector<string>&)> populateUploadKeys( void ) {
+	map<string, void (Upload::*)(const vector<string>&)>	keys;
 	
-	keys.insert("allow");
-	keys.insert("index");
-	keys.insert("autoindex");
+	keys["location"] = &ALocation::setPath;
+	keys["allow"] = &ALocation::setAllow;
+	keys["autoindex"] = &ALocation::setAutoIndex;
+	keys["allow"] = &Upload::setAllow;
+	keys["upload_store"] = &Upload::setUploadStore;
 
 	return (keys);
 }
 
-set<string>	populateUploadKeys( void ) {
-	set<string>	keys;
-	
-	keys.insert("allow");
-	keys.insert("upload_store");
+map<string, void (Cgi::*)(const vector<string>&)>	populateCgiKeys( void ) {
+	map<string, void (Cgi::*)(const vector<string>&)> keys;
 
-	return (keys);
-}
-
-set<string>	populateCGIKeys( void ) {
-	set<string>	keys;
-
-	keys.insert("tbd");
+	keys["location"] = &ALocation::setPath;
 
 	return (keys);
 };
 
-const map<string, void (Server::*)(const vector<string>&)>	Parser::_keys = populateKeys();
-const set<string>	Parser::_authorizedStdLocationKeys = populateStdLocationKeys();
-const set<string>	Parser::_authorizedUploadKeys = populateUploadKeys();
-const set<string>	Parser::_authorizedCGIKeys = populateCGIKeys();
+const map<string, void (Server::*)(const vector<string>&)>		Parser::_serverKeys = populateServerKeys();
+const map<string, void (StdLocation::*)(const vector<string>&)>	Parser::_stdLocationKeys = populateStdLocationKeys();
+const map<string, void (Upload::*)(const vector<string>&)> 		Parser::_uploadKeys = populateUploadKeys();
+const map<string, void (Cgi::*)(const vector<string>&)>			Parser::_CgiKeys = populateCgiKeys();
 
 /* Private methods ********************************************************** */
 
@@ -158,24 +155,44 @@ void	Parser::checkAndTrimSemiColon( vector<string>* tokens ) {
 	}
 }
 
+void	Parser::populateAttribute( Configuration& config, const vector<string>& tokens ) {
+	map<string, void (Server::*)(const vector<string>&)>::const_iterator cit = _serverKeys.find(tokens.at(1));
+
+	if (cit != _serverKeys.end()) {
+		Server&	current_server = config.getServer("LAST");
+		(current_server.*(cit->second))(tokens);
+	}
+}
+
 void	Parser::parseLine( Configuration& config, const string& line, size_t line_count, blockType* curr_block ) {
 	if (isEmpty(line) || isCommented(line))
 		return ;
 
 	vector<string>	tokens = extractTokens(line, line_count);
 
-	if (_keys.find(tokens.at(1)) == _keys.end()) {
+	if (_serverKeys.find(tokens.at(1)) == _serverKeys.end()) {
 		stringstream ss;
 		ss << "Invalid config at line " << tokens.at(0) << ": \"" << tokens.at(1) << "\" not supported";
 		throw (invalid_argument(ss.str()));
 	}
 	if (tokens.at(1) == "server")
 		initServerBlock(config, tokens, &curr_block);
-	else
+	else {
 		checkAndTrimSemiColon(&tokens);
-	for (vector<string>::iterator it = tokens.begin(); it < tokens.end(); ++it)
-		cout << *it << " ";
-	cout << endl;
+		// populateAttribute(config, tokens);
+	}
+	switch (*curr_block) {
+		case SERVER:
+			break;
+		case STD_LOCATION:
+			break;
+		case UPLOAD:
+			break;
+		case CGI:
+			break;
+		default:
+			break;
+	}
 }
 
 /* Public methods *********************************************************** */
@@ -184,7 +201,7 @@ void	Parser::parseFile( Configuration& config, const char* file ) {
 	ifstream	ifs;
 	string		line;
 	size_t		line_count = 1;
-	blockType	block_type;
+	blockType	block_type = NO_BLOCK;
 
 	ifs.open(file, ifstream::in);
 	if (!checkCurlyBrackets(ifs))
