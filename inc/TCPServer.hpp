@@ -13,6 +13,10 @@
 #include <unistd.h>
 #include <cerrno>
 #include <fcntl.h>
+#include <csignal>
+#include <cstdlib>
+
+extern bool sigint_flag;
 
 class TCPServer {
 private:
@@ -23,12 +27,12 @@ private:
 	int	_nb_of_ports;
 
 // for poll()
-	struct pollfd _poll_fds[200];
+	struct pollfd 	_poll_fds[200];
+	nfds_t 			_n_poll_fds;
 	// timeout is set to 3 minutes
 	int	_timeout;
 
 	int	_client_socket_fd;
-	int _client_count;
 	struct sockaddr_storage _client_addr;
 	socklen_t _client_addr_size;
 
