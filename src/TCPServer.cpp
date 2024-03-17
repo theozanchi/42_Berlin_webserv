@@ -33,10 +33,13 @@ TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _
 
         // AF_INET IPv4 vs IPv6
         // SOCK_STREAM FOR TCP vs UDP
-        // SOCK_NONBLOCK to set socket in non-blocking mode
-        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) < 0) {
+        // SOCK_NONBLOCK to set socket in non-blocking mode SOCK_STREAM | SOCK_NONBLOCK
+        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
             throw SocketCreationFailed();
         }
+
+        // for my mac only
+        fcntl(_server_socket_fd[i], F_SETFL, O_NONBLOCK);
 
         // to avoid bind() error "port already in use" when rerunning the server
         if (setsockopt(_server_socket_fd[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
@@ -96,6 +99,19 @@ void TCPServer::wait_for_connection() {
     }
 }
 
+int TCPServer::is_server_socket(int pollfd) {
+    for (int j = 0; j < _nb_of_ports; j++)
+    {
+        if (pollfd == _server_socket_fd[j])
+        {
+            std::cout << "It's the server socket" << std::endl;
+            return (j);
+        }
+    }
+    std::cout << "It's a client socket" << std::endl;
+    return (-1);
+}
+
 void TCPServer::accept_connections() {
     // To Do
     // ibm.com/docs/en/i/7.4?topic=designs-using-poll-instead-select
@@ -111,13 +127,12 @@ void TCPServer::accept_connections() {
     // The IBM version is a blocking I/O operation
     const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
                         <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";
+    char  recv_msg[1024];
+    (void)msg;
+    (void)_timeout;
 
     //https://www.linuxtoday.com/blog/multiplexed-i0-with-poll/
-    // flag to stop server
-    bool    end_server = false;
-    int     rt_val, len = 1;
-    bool    close_conn;
-    char    buffer[80];
+    int     rt_val = 1;
 
     // initialize the pollfd structure
     std::memset(_poll_fds, '\0', sizeof _poll_fds);
@@ -129,6 +144,7 @@ void TCPServer::accept_connections() {
     {
         _poll_fds[i].fd = _server_socket_fd[i];
         _poll_fds[i].events = POLLIN; // listening sockets
+        _poll_fds[i].revents = 0;
         // on return from poll()
         //_poll_fds[i].revents will be filled with same POLLIN POLLOUT values
         // indicating which of the interesting events the fd is ready for
@@ -136,30 +152,94 @@ void TCPServer::accept_connections() {
     }
 
     // n_poll_fds will keep track of the nb of fds in struct pollfd
-    int n_poll_fds;
+    nfds_t n_poll_fds;
+    int numfds = _nb_of_ports;
+     // not sure about this line
+    // we would always reset the number
 
-    do
+    // my server is currently blocking other incoming connections
+    while (true)
     {
+        n_poll_fds = numfds;
         // monitor the listening fds for readiness for reading
-        n_poll_fds = _nb_of_ports;
         rt_val = poll(_poll_fds, n_poll_fds, _timeout);
         if (rt_val < 0)
         {
             std::cout << "poll() failed" << std::endl;
             break ;
         }
-        // check if the time limit is reached
-        if (rt_val == 0)
+        // check if the time limit is reached when timeout is set
+        else if (rt_val == 0)
         {
             std::cout << "poll() timed out" << std::endl;
             break ;
         }
-
-        // one or more fds are readable. Need to determine which ones
-        // loop through to find fd that returned POLLIN
-        // determine whether it's the listening or the active connection
-        for (int i = 0; i < _nb_of_ports; i++)
+        else
         {
+            // one or more fds are readable. Need to determine which ones
+            // loop through to find fd that returned POLLIN
+            // determine whether it's the listening or the active connection
+            for (unsigned int i = 0; i < n_poll_fds; i++)
+            { 
+                if (_poll_fds[i].fd <= 0)
+                    continue;
+            
+                // fd is ready for reading
+                if (_poll_fds[i].revents & POLLIN)
+                {
+                    // request for new connection to server
+                    int j = is_server_socket(_poll_fds[i].fd);
+                    if (j >= 0)
+                    {
+                        _client_addr_size = sizeof _client_addr;
+                        _client_socket_fd = accept(_server_socket_fd[j], (struct sockaddr *)&_client_addr, &_client_addr_size);
+                        if (_client_socket_fd == -1)
+                        {
+                            std::cout << " accept() failed" << std::endl;
+                            break ;
+                        }
+                        fcntl(_client_socket_fd, F_SETFL, O_NONBLOCK);
+                        // ad new fd to pollfds
+                        std::cout << " accept() client " << _client_socket_fd << std::endl;
+                        _poll_fds[numfds].fd = _client_socket_fd;
+                        _poll_fds[numfds].events = POLLIN;
+                        numfds++;
+                        _client_count++;
+                    }
+                    // data from an existing connection, receive it
+                    else
+                    {
+                        std::memset(&recv_msg, '\0', sizeof recv_msg);
+                        ssize_t numbytes = recv(_poll_fds[i].fd, &recv_msg, sizeof recv_msg, 0);
+
+                        if (numbytes < 0)
+                            std::cout << "recv() failed" << std::endl;
+                        else if (numbytes == 0)
+                        {
+                            // 0 means connection closed by client
+                            std::cout << "Socket " << _poll_fds[i].fd << "closed by client" << std::endl;
+                            if (close(_poll_fds[i].fd) == -1)
+                                std::cout << " close() error" << std::endl;
+                            // make it negative so that it is ignored in the future
+                            _poll_fds[i].fd *= -1;
+                            _poll_fds[i].revents = 0;
+                        }
+                        else
+                        {
+                            // process data from client
+                            std::cout << "Here parsing of request should happen" << std::endl;
+                            std::cout << "And appropriate HTTP Response should be send" << std::endl;
+                            send(_client_socket_fd, msg, std::strlen(msg), 0);
+                        }
+                    }
+                }
+            } 
+        }
+    }
+}
+
+/*
+            // old code 
             if (_poll_fds[i].revents == 0)
                 continue ;
 
@@ -257,5 +337,5 @@ void TCPServer::accept_connections() {
         }
 
 
-    } while (end_server == false);
-}
+    }
+}*/

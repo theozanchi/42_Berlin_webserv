@@ -12,6 +12,7 @@
 #include <exception>
 #include <unistd.h>
 #include <cerrno>
+#include <fcntl.h>
 
 class TCPServer {
 private:
@@ -30,6 +31,8 @@ private:
 	int _client_count;
 	struct sockaddr_storage _client_addr;
 	socklen_t _client_addr_size;
+
+	int is_server_socket(int pollfd);
 
 public:
 	TCPServer(int *ports, int nb_of_ports); // Default Constructor
