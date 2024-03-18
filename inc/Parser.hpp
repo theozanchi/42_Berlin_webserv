@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:24:42 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/15 13:32:32 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/18 11:31:42 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,10 @@ private:
 	static bool	isValidServerLine( vector<string>& tokens );
 	static void	initServerBlock( Configuration& config, vector<string>& tokens, blockType** curr_block );
 
-	static void	populateAttribute( Configuration& config, const vector<string>& tokens );
+	static void	populateServerAttribute( Configuration& config, const vector<string>& tokens );
+	static void	populateStdLocationAttribute( Configuration& config, const vector<string>& tokens );
+	static void	populateUploadAttribute( Configuration& config, const vector<string>& tokens );
+	static void	populateCgiAttribute( Configuration& config, const vector<string>& tokens );
 
 	static void	parseLine( Configuration& config, const string& line, size_t line_count, blockType* curr_block );
 

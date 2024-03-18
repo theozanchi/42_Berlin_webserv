@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 18:18:20 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/13 11:57:20 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/18 17:01:39 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,3 +29,40 @@ void	Parser::initServerBlock( Configuration& config, vector<string>& tokens, blo
 	**curr_block = SERVER;
 }
 
+void	Parser::populateServerAttribute( Configuration& config, const vector<string>& tokens ) {
+	map<string, void (Server::*)(const vector<string>&)>::const_iterator cit = _serverKeys.find(tokens.at(1));
+
+	if (cit != _serverKeys.end()) {
+		Server&	current_server = config.getServer("LAST");
+		(current_server.*(cit->second))(tokens);
+	}
+	else {
+		stringstream ss;
+		ss << "Invalid config at line " << tokens.at(0) << ": invalid \"" << tokens.at(1) << "\" key for a server block";
+		throw (ss.str());
+	}
+}
+
+void	Parser::populateStdLocationAttribute( Configuration& config, const vector<string>& tokens ) {
+	map<string, void (StdLocation::*)(const vector<string>&)>::const_iterator cit = _stdLocationKeys.find(tokens.at(1));
+
+	if (cit != _stdLocationKeys.end()) {
+		Server&			current_server = config.getServer("LAST");
+		ALocation&		current_location = current_server.getLocation("LAST");
+		StdLocation*	std_location = dynamic_cast<StdLocation*>(&current_location);
+
+		if (std_location) {
+			(std_location->*(cit->second))(tokens);
+		}
+		else {
+			stringstream ss; 
+			ss << "Error with location " << tokens.at(1) << ": logic error with class type";
+			throw (logic_error(ss.str()));
+		}
+	}
+	else {
+		stringstream ss;
+		ss << "Invalid config at line " << tokens.at(0) << ": invalid \"" << tokens.at(1) << "\" key for a standard location block";
+		throw (ss.str());
+	}
+}

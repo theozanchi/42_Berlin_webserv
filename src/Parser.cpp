@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/15 16:18:21 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/18 11:29:42 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,15 +152,6 @@ void	Parser::checkAndTrimSemiColon( vector<string>* tokens ) {
 		stringstream ss;
 		ss << "Invalid config at line " << tokens->at(0) << ": missing semi-colon at end-of-line";
 		throw (invalid_argument(ss.str())); 
-	}
-}
-
-void	Parser::populateAttribute( Configuration& config, const vector<string>& tokens ) {
-	map<string, void (Server::*)(const vector<string>&)>::const_iterator cit = _serverKeys.find(tokens.at(1));
-
-	if (cit != _serverKeys.end()) {
-		Server&	current_server = config.getServer("LAST");
-		(current_server.*(cit->second))(tokens);
 	}
 }
 
