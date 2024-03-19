@@ -34,12 +34,12 @@ TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _
         // AF_INET IPv4 vs IPv6
         // SOCK_STREAM FOR TCP vs UDP
         // SOCK_NONBLOCK to set socket in non-blocking mode SOCK_STREAM | SOCK_NONBLOCK
-        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) < 0) {
             throw SocketCreationFailed();
         }
 
         // for my mac only
-        fcntl(_server_socket_fd[i], F_SETFL, O_NONBLOCK);
+        //fcntl(_server_socket_fd[i], F_SETFL, O_NONBLOCK);
 
         // to avoid bind() error "port already in use" when rerunning the server
         if (setsockopt(_server_socket_fd[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
@@ -74,9 +74,12 @@ TCPServer TCPServer::operator= (TCPServer const& cpy) {
 
 TCPServer::~TCPServer() {
     std::cout << "TCPServer Destructor called" << std::endl;
-    
-    for (int i = 0; i < _n_poll_fds; i++)
-        close(_poll_fds[i].fd);
+
+    for (unsigned int i = 0; i < _n_poll_fds; i++)
+    {
+        if (_poll_fds[i].fd > 0)
+            close(_poll_fds[i].fd);
+    }
 
     delete [] _server_socket_fd;
     delete [] _server_addr;
@@ -152,7 +155,7 @@ void TCPServer::accept_connections() {
 
     int numfds = _nb_of_ports;
 
-    // my server is currently blocking other incoming connections
+    // run until Ctrl+C signal SIGINT is received
     while (!sigint_flag)
     {
         _n_poll_fds = numfds;
@@ -175,10 +178,10 @@ void TCPServer::accept_connections() {
             // loop through to find fd that returned POLLIN
             // determine whether it's the listening or the active connection
             for (unsigned int i = 0; i < _n_poll_fds; i++)
-            { 
+            {
                 if (_poll_fds[i].fd <= 0)
                     continue;
-            
+
                 // fd is ready for reading
                 if (_poll_fds[i].revents & POLLIN)
                 {
@@ -193,7 +196,8 @@ void TCPServer::accept_connections() {
                             std::cout << " accept() failed" << std::endl;
                             break ;
                         }
-                        fcntl(_client_socket_fd, F_SETFL, O_NONBLOCK);
+                        // for mac
+                        //fcntl(_client_socket_fd, F_SETFL, O_NONBLOCK);
                         // ad new fd to pollfds
                         std::cout << " accept() client " << _client_socket_fd << std::endl;
                         _poll_fds[numfds].fd = _client_socket_fd;
@@ -228,7 +232,7 @@ void TCPServer::accept_connections() {
                         }
                     }
                 }
-            } 
+            }
         }
     }
 }
