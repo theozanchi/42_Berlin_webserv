@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/15 13:39:51 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/19 10:55:20 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <vector>
 # include <string>
 # include <map>
+# include <functional>
 
 using namespace std;
 
@@ -31,7 +32,7 @@ private:
 	bool					_clientBodyInFileOnly;
 	int						_clientBodyBufferSize;
 	int						_clientBodyTimeOut;
-	map<string, ALocation&>	_location;
+	map<string, ALocation*>	_location;
 
 public:
 	Server();
@@ -49,7 +50,7 @@ public:
 	void	setClientBodyTimeOut( const vector<string>& tokens );
 
 	void		addLocation( const vector<string>& tokens );
-	ALocation&	getLocation( const string& path_or_flag );
+	ALocation*	getLocation( const string& path_or_flag );
 };
 
 #endif

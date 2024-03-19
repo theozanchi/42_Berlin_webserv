@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 18:18:20 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/18 17:01:39 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/19 10:10:11 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,15 +48,15 @@ void	Parser::populateStdLocationAttribute( Configuration& config, const vector<s
 
 	if (cit != _stdLocationKeys.end()) {
 		Server&			current_server = config.getServer("LAST");
-		ALocation&		current_location = current_server.getLocation("LAST");
-		StdLocation*	std_location = dynamic_cast<StdLocation*>(&current_location);
+		ALocation*		current_location = current_server.getLocation("LAST");
+		StdLocation*	std_location = dynamic_cast<StdLocation*>(current_location);
 
-		if (std_location) {
+		if (current_location && std_location) {
 			(std_location->*(cit->second))(tokens);
 		}
 		else {
 			stringstream ss; 
-			ss << "Error with location " << tokens.at(1) << ": logic error with class type";
+			ss << "Invalid or non-existent location";
 			throw (logic_error(ss.str()));
 		}
 	}

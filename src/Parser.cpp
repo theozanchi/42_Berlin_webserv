@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/18 11:29:42 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/19 10:17:57 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ map<string, void (StdLocation::*)(const vector<string>&)> populateStdLocationKey
 	keys["allow"] = &ALocation::setAllow;
 	keys["autoindex"] = &ALocation::setAutoIndex;
 	keys["index"] = &StdLocation::setIndex;
+
+	return (keys);
 }
 
 map<string, void (Upload::*)(const vector<string>&)> populateUploadKeys( void ) {

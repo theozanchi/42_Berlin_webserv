@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/15 16:12:27 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/19 10:27:20 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,12 @@ Server& Server::operator=( const Server& src ) {
 	return (*this);
 }
 
-Server::~Server() {}
+Server::~Server() {
+	for (map<string, ALocation*>::iterator it = _location.begin(); it != _location.end(); ++it) {
+		delete it->second;
+		_location.erase(it->first);
+	}
+}
 
 /* Setters ****************************************************************** */
 
@@ -89,21 +94,21 @@ void	Server::setClientBodyTimeOut( const vector<string>& tokens ) {
 
 void	Server::addLocation( const vector<string>& tokens ) {
 	if (tokens.at(1).front() == '~')
-		_location[tokens.at(1)] = Cgi();
+		_location[tokens.at(1)] = new Cgi();
 	else if (tokens.at(1).find("upload") != string::npos)
-		_location[tokens.at(1)] = Upload();
+		_location[tokens.at(1)] = new Upload();
 	else
-		_location[tokens.at(1)] = StdLocation();
+		_location[tokens.at(1)] = new StdLocation();
 	
-	_location[tokens.at(1)].setPath(tokens);
+	_location[tokens.at(1)]->setPath(tokens);
 }
 
-ALocation&	Server::getLocation( const string& path_or_flag ) {
+ALocation*	Server::getLocation( const string& path_or_flag ) {
 	if (_location.find(path_or_flag) != _location.end()) {
 		return (_location[path_or_flag]);
 	}
 	else if (path_or_flag == "LAST") {
-		map<string, ALocation&>::reverse_iterator rit = _location.rbegin();
+		map<string, ALocation*>::reverse_iterator rit = _location.rbegin();
 		return (rit->second);
 	}
 	else {
