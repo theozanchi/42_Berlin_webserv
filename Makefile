@@ -39,7 +39,10 @@ SRC			=	class/ALocation.cpp \
 				\
 				main.cpp \
 				Parser_ServerBlock.cpp \
-				Parser.cpp
+				Parser.cpp \
+        			\
+        			Request.cpp \
+				Response.cpp \
 
 SRCS		=	$(addprefix ${SRCS_DIR}, ${SRC})
 SRC_NR		=	$(words ${SRCS})
