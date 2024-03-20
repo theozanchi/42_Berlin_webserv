@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:48 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 15:14:46 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 15:50:06 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-ALocation::ALocation() {}
+ALocation::ALocation() {
+	_autoIndex = false;
+}
 
 ALocation::ALocation( const ALocation& src )
 	:	_path(src._path),
