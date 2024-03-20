@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:46:25 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 13:06:23 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 17:16:15 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ public:
 	~Upload();
 
 	void	setUploadStore( const vector<string>& tokens );
+
+	string	getUploadStore( void ) const;
 
 	void	print( void ) const;
 	Upload*	clone( void ) const;

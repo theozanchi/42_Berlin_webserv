@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:48 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 15:50:06 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 17:15:08 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,35 @@ void	ALocation::setAutoIndex( const vector<string>& tokens ) {
 		ss << "Invalid config at line " << tokens.at(0) << ": \"" << tokens.at(1) << "\"not supported";
 		throw (ss.str());
 	}
+}
+
+/* Getters ****************************************************************** */
+
+string	ALocation::getPath( void ) const {
+	return (_path);
+}
+
+string	ALocation::getAllow( size_t idx ) const {
+	if (idx >= _allow.size()) {
+		stringstream ss;
+		ss << "Index " << idx << " out of range for getAllow()";
+		throw (out_of_range(ss.str()));
+	}
+	return (_allow.at(idx));
+}
+
+vector<string>	ALocation::getAllow( void ) const {
+	return (_allow);
+}
+
+bool	ALocation::isAllow( const string& method ) const {
+	for (vector<string>::const_iterator cit = _allow.begin(); cit < _allow.end(); ++cit) {
+		if (*cit == method)
+			return (true);
+	}
+	return (false);
+}
+
+bool	ALocation::getAutoIndex( void ) const {
+	return (_autoIndex);
 }

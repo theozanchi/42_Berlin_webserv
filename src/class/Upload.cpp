@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:50:17 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 15:49:33 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 17:16:25 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,13 @@ void	Upload::setUploadStore( const vector<string>& tokens ) {
 		&& uploadStore.at(0) == uploadStore.at(uploadStore.length() - 1))
 		uploadStore = uploadStore.substr(1, uploadStore.length() - 2);
 	_uploadStore = uploadStore;
+}
+
+
+/* Getters ****************************************************************** */
+
+string	Upload::getUploadStore( void ) const {
+	return (_uploadStore);
 }
 
 /* Methods ****************************************************************** */

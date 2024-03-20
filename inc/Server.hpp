@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 13:07:55 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 17:03:31 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,19 +40,30 @@ public:
 	Server& operator=( const Server& src );
 	~Server();
 
-	void		setListen( const vector<string>& tokens );
-	void		setHost( const vector<string>& tokens );
-	void		setServerName( const vector<string>& tokens );
-	void		setErrorPage( const vector<string>& tokens );
-	void		setClientMaxBodySize( const vector<string>& tokens );
-	void		setClientBodyInFileOnly( const vector<string>& tokens );
-	void		setClientBodyBufferSize( const vector<string>& tokens );
-	void		setClientBodyTimeOut( const vector<string>& tokens );
-	void		addLocation( const vector<string>& tokens );
+	void			setListen( const vector<string>& tokens );
+	void			setHost( const vector<string>& tokens );
+	void			setServerName( const vector<string>& tokens );
+	void			setErrorPage( const vector<string>& tokens );
+	void			setClientMaxBodySize( const vector<string>& tokens );
+	void			setClientBodyInFileOnly( const vector<string>& tokens );
+	void			setClientBodyBufferSize( const vector<string>& tokens );
+	void			setClientBodyTimeOut( const vector<string>& tokens );
+	void			addLocation( const vector<string>& tokens );
 
-	ALocation*	getLocation( const string& path_or_flag );
+	int				getListen( size_t idx ) const;
+	vector<int>		getListen( void ) const;
+	string			getHost( size_t idx ) const;
+	vector<string>	getHost( void ) const;
+	string			getServerName( size_t idx ) const;
+	vector<string>	getServerName( void ) const;
+	string			getErrorPage( int code ) const;
+	int				getClientMaxBodySize( void ) const;
+	bool			getClientBodyInFileOnly( void ) const;
+	int				getClientBodyBufferSize( void ) const;
+	int				getClientBodyTimeOut( void ) const;
+	ALocation*		getLocation( const string& path_or_flag );
 
-	void		print( void ) const;
+	void			print( void ) const;
 };
 
 #endif
