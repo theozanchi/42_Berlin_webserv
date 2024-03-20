@@ -6,7 +6,7 @@
 #    By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/06 11:40:43 by tzanchi           #+#    #+#              #
-#    Updated: 2024/03/06 12:19:28 by tzanchi          ###   ########.fr        #
+#    Updated: 2024/03/20 15:38:37 by tzanchi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,16 @@ NC			=	\033[0m
 BOLD		=	\033[1m
 TICK		=	✓
 
-SRC			=	main.cpp
+SRC			=	class/ALocation.cpp \
+				class/Cgi.cpp \
+				class/Configuration.cpp \
+				class/Server.cpp \
+				class/StdLocation.cpp \
+				class/Upload.cpp \
+				\
+				main.cpp \
+				Parser_ServerBlock.cpp \
+				Parser.cpp
 
 SRCS		=	$(addprefix ${SRCS_DIR}, ${SRC})
 SRC_NR		=	$(words ${SRCS})
@@ -43,8 +52,8 @@ ${NAME}:		entry_message ${OBJS}
 				@if [ -e ${NAME} ] && [ "$(shell find ${OBJ_DIR} -newer ${NAME} 2>/dev/null)" = "" ]; then \
 					echo "Nothing to do\n"; \
 				else \
-					@${CC} ${CFLAGS} ${OBJS} -o ${NAME}; \
-					@echo "${YELLOW}\nCompilation complete, ${NAME} executable at the root of the directory${NC}\n";\
+					${CC} ${CFLAGS} ${OBJS} -o ${NAME}; \
+					echo "${YELLOW}\nCompilation complete, ${NAME} executable at the root of the directory${NC}\n";\
 				fi
 
 $(OBJ_DIR)/%.o:	$(SRCS_DIR)%.cpp
@@ -72,12 +81,16 @@ re:				fclean
 				@echo "\n${GREEN}COMPILING WITHOUT DEBUG FLAG${NC}\n"
 				@make --no-print-directory all
 
-
 go:				all
 				@./${NAME}
 
 vgo:			all
 				valgrind -s --leak-check=full ./${NAME}
+
+asan:			fclean
+				$(eval CFLAGS += -fsanitize=address)
+				@echo "\n${GREEN}COMPILING WITH ASAN FLAG${NC}\n"
+				@make --no-print-directory all
 
 debug:			fclean
 				$(eval CFLAGS += -g)

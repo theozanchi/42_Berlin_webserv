@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Cgi.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/06 11:42:06 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 14:54:47 by tzanchi          ###   ########.fr       */
+/*   Created: 2024/03/07 11:41:27 by tzanchi           #+#    #+#             */
+/*   Updated: 2024/03/20 13:03:49 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "webserv.hpp"
+#ifndef CGI_HPP
+# define CGI_HPP
 
-int	main( int argc, char **argv ) {
-	(void)argv;
-	if (argc > 2) {
-		cerr << "Invalid argument: only one configuration file accepted (optional)" << endl;
-	}
-	else {
-		Configuration	config;
-	
-		try {
-			Parser::parseFile(config, "config/default.conf");
-			config.print();
-		}
-		catch (const std::exception& e) {
-			std::cerr << e.what() << std::endl;
-		}
-	}
-}
+# include "ALocation.hpp"
+
+class Cgi : public ALocation {
+private:
+
+public:
+	Cgi();
+	Cgi( const Cgi& src );
+	Cgi& operator=( const Cgi& src );
+	~Cgi();
+
+	void	print( void ) const;
+	Cgi*	clone( void ) const;
+};
+
+#endif
