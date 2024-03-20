@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 15:35:10 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 17:09:58 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,72 @@ void	Server::addLocation( const vector<string>& tokens ) {
 }
 
 /* Getters ****************************************************************** */
+
+int	Server::getListen( size_t idx ) const {
+	if (idx >= _listen.size()) {
+		stringstream ss;
+		ss << "Index " << idx << " out of range for getListen()";
+		throw (out_of_range(ss.str()));
+	}
+	return (_listen.at(idx));
+}
+
+vector<int>	Server::getListen( void ) const {
+	return (_listen);
+}
+
+string	Server::getHost( size_t idx ) const {
+	if (idx >= _host.size()) {
+		stringstream ss;
+		ss << "Index " << idx << " out of range for getHost()";
+		throw (out_of_range(ss.str()));
+	}
+	return (_host.at(idx));
+}
+
+vector<string>	Server::getHost( void ) const {
+	return (_host);
+}
+
+string	Server::getServerName( size_t idx ) const {
+	if (idx >= _serverName.size()) {
+		stringstream ss;
+		ss << "Index " << idx << " out of range for getServerName()";
+		throw (out_of_range(ss.str()));
+	}
+	return (_serverName.at(idx));
+}
+
+vector<string>	Server::getServerName( void ) const {
+	return (_serverName);
+}
+
+string	Server::getErrorPage( int code ) const {
+	if (_errorPage.find(code) != _errorPage.end()) {
+		return (_errorPage.at(code));
+	}
+	else {
+		stringstream ss;
+		ss << "Error page for code " << code << " not found";
+		throw (invalid_argument(ss.str()));
+	}
+}
+
+int	Server::getClientMaxBodySize( void ) const {
+	return (_clientMaxBodySize);
+}
+
+bool	Server::getClientBodyInFileOnly( void ) const {
+	return (_clientBodyInFileOnly);
+}
+
+int	Server::getClientBodyBufferSize( void ) const {
+	return (_clientBodyBufferSize);
+}
+
+int	Server::getClientBodyTimeOut( void ) const {
+	return (_clientBodyTimeOut);
+}
 
 ALocation*	Server::getLocation( const string& path_or_flag ) {
 	if (_location.find(path_or_flag) != _location.end()) {

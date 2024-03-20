@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:52:21 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 15:49:57 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 17:15:55 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,13 @@ void	StdLocation::setIndex( const vector<string>& tokens ) {
 		&& index.at(0) == index.at(index.length() - 1))
 		index = index.substr(1, index.length() - 2);
 	_index = index;
+}
+
+
+/* Getters ****************************************************************** */
+
+string	StdLocation::getIndex( void ) const {
+	return (_index);
 }
 
 /* Methods ****************************************************************** */

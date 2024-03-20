@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:51:45 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 13:05:24 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 17:15:36 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,11 @@ public:
 	StdLocation& operator=( const StdLocation& src );
 	~StdLocation();
 
-	void	setIndex( const vector<string>& tokens );
+	void			setIndex( const vector<string>& tokens );
 
-	void	print( void ) const;
+	string			getIndex( void ) const;
+
+	void			print( void ) const;
 	StdLocation*	clone( void ) const;
 };
 
