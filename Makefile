@@ -32,6 +32,7 @@ TICK		=	✓
 
 SRC			=	main_request.cpp \
 				Request.cpp \
+				Response.cpp
 
 SRCS		=	$(addprefix ${SRCS_DIR}, ${SRC})
 SRC_NR		=	$(words ${SRCS})
