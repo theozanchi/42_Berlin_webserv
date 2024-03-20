@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:42:06 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/12 16:32:13 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 14:54:47 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	main( int argc, char **argv ) {
 	
 		try {
 			Parser::parseFile(config, "config/default.conf");
+			config.print();
 		}
 		catch (const std::exception& e) {
 			std::cerr << e.what() << std::endl;

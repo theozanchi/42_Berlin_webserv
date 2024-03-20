@@ -6,13 +6,13 @@
 #    By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/06 11:40:43 by tzanchi           #+#    #+#              #
-#    Updated: 2024/03/15 13:38:09 by tzanchi          ###   ########.fr        #
+#    Updated: 2024/03/20 15:38:37 by tzanchi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #Compiler targets and libraries
 CC			=	c++
-# CFLAGS		=	-Wall -Wextra -Werror -std=c++98
+CFLAGS		=	-Wall -Wextra -Werror -std=c++98
 CFLAGS		+=	-I$(patsubst %/,%,$(patsubst ./%,%,$(SRCS_DIR)))
 NAME		=	webserv
 
@@ -81,12 +81,16 @@ re:				fclean
 				@echo "\n${GREEN}COMPILING WITHOUT DEBUG FLAG${NC}\n"
 				@make --no-print-directory all
 
-
 go:				all
 				@./${NAME}
 
 vgo:			all
 				valgrind -s --leak-check=full ./${NAME}
+
+asan:			fclean
+				$(eval CFLAGS += -fsanitize=address)
+				@echo "\n${GREEN}COMPILING WITH ASAN FLAG${NC}\n"
+				@make --no-print-directory all
 
 debug:			fclean
 				$(eval CFLAGS += -g)

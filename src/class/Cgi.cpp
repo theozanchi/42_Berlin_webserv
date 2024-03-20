@@ -6,11 +6,11 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:46:37 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/15 12:32:28 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 15:23:26 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Cgi.hpp"
+#include "webserv.hpp"
 
 /* Constructors, assignment operator and destructor ************************* */
 
@@ -28,3 +28,18 @@ Cgi& Cgi::operator=( const Cgi& src ) {
 Cgi::~Cgi() {}
 
 /* Member functions ********************************************************* */
+
+Cgi*	Cgi::clone( void ) const {
+	return (new Cgi(*this));
+}
+
+void	Cgi::print( void ) const {
+	cout << "\033[1;36mCgi\033[0m" << endl;
+	cout << "\tpath: " << _path << endl;
+	cout << "\tallow: ";
+	for (vector<string>::const_iterator cit = _allow.begin(); cit < _allow.end(); ++cit) {
+		cout << *cit << " ";
+	}
+	cout << endl;
+	cout << "\tauto_index: " << _autoIndex << endl;
+}

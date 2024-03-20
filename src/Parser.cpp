@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:52:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/19 10:17:57 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 15:37:55 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ map<string, void (Server::*)(const vector<string>&)> populateServerKeys( void ) 
 	keys["server_name"] = &Server::setServerName;
 	keys["error_page"] = &Server::setErrorPage;
 	keys["client_max_body_size"] = &Server::setClientMaxBodySize;
-	keys["client_body_in_file_only"] = &Server::setClientMaxBodySize;
+	keys["client_body_in_file_only"] = &Server::setClientBodyInFileOnly;
 	keys["client_body_buffer_size"] = &Server::setClientBodyBufferSize;
 	keys["client_body_timeout"] = &Server::setClientBodyTimeOut;
 	keys["location"] = &Server::addLocation;
@@ -89,7 +89,7 @@ bool	Parser::isEmpty( const string& line ) {
 		return (true);
 	
 	for (string::const_iterator it = line.begin(); it < line.end(); ++it) {
-		if (!isspace(*it) && *it != '}' && *it != '{')
+		if (!isspace(*it) && *it != '{')
 			return (false);
 	}
 	
@@ -106,6 +106,26 @@ bool	Parser::isCommented( const string& line ) {
 		return (true);
 	else
 		return (false);
+}
+
+void	Parser::updateCurrBlockFlag( const vector<string>& tokens, blockType** curr_block ) {
+	if (tokens.at(1) == "server") {
+		**curr_block = SERVER;
+	}
+	else if (tokens.at(1) == "location") {
+		if (tokens.at(2).at(0) == '~')
+			**curr_block = CGI;
+		else if (tokens.at(2).find("upload") != string::npos)
+			**curr_block = UPLOAD;
+		else
+			**curr_block = STD_LOCATION;
+	}
+	else if (tokens.at(1) == "}") {
+		if (**curr_block >= STD_LOCATION)
+			**curr_block = SERVER;
+		else
+			**curr_block = NO_BLOCK;
+	}
 }
 
 vector<string>	Parser::extractTokens( const string& line, size_t line_count ) {
@@ -145,9 +165,9 @@ void	Parser::checkAndTrimSemiColon( vector<string>* tokens ) {
 		return ;
 	checkForWrongSemiColon(tokens);
 	if (*rit == ";") {
-		tokens->erase(next(rit).base());	//Converting the reverse iterator into a forward one
+		tokens->erase(rit.base());	//Converting the reverse iterator into a forward one
 	}
-	else if ((*rit).back() == ';') {
+	else if ((*rit).at((*rit).length() - 1) == ';') {
 		*rit = (*rit).substr(0, (*rit).length() - 1);
 	}
 	else {
@@ -163,29 +183,36 @@ void	Parser::parseLine( Configuration& config, const string& line, size_t line_c
 
 	vector<string>	tokens = extractTokens(line, line_count);
 
-	if (_serverKeys.find(tokens.at(1)) == _serverKeys.end()) {
-		stringstream ss;
-		ss << "Invalid config at line " << tokens.at(0) << ": \"" << tokens.at(1) << "\" not supported";
-		throw (invalid_argument(ss.str()));
+	if (tokens.at(1) == "server") {
+		initServerBlock(config, tokens);
+		updateCurrBlockFlag(tokens, &curr_block);
+		return;
 	}
-	if (tokens.at(1) == "server")
-		initServerBlock(config, tokens, &curr_block);
+	else if (tokens.at(1) == "}") {
+		updateCurrBlockFlag(tokens, &curr_block);
+		return;
+	}
 	else {
 		checkAndTrimSemiColon(&tokens);
-		// populateAttribute(config, tokens);
 	}
+
 	switch (*curr_block) {
 		case SERVER:
+			populateServerAttribute(config, tokens);
 			break;
 		case STD_LOCATION:
+			populateStdLocationAttribute(config, tokens);
 			break;
 		case UPLOAD:
+			populateUploadAttribute(config, tokens);
 			break;
 		case CGI:
+			populateCgiAttribute(config, tokens);
 			break;
 		default:
 			break;
 	}
+	updateCurrBlockFlag(tokens, &curr_block);
 }
 
 /* Public methods *********************************************************** */
@@ -203,6 +230,5 @@ void	Parser::parseFile( Configuration& config, const char* file ) {
 		parseLine(config, line, line_count, &block_type);
 		line_count++;
 	}
-	(void)config;
 	ifs.close();
 }

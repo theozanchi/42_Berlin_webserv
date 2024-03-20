@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:48 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/15 10:48:11 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 15:14:46 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,22 +33,22 @@ ALocation& ALocation::operator=( const ALocation& src ) {
 
 ALocation::~ALocation() {}
 
-/* Member functions ********************************************************* */
+/* Setters ****************************************************************** */
 
 void	ALocation::setPath( const vector<string>& tokens ) {
-	_path = tokens.at(1);
+	_path = tokens.at(2);
 }
 
 void	ALocation::setAllow( const vector<string>& tokens ) {
-	for (vector<string>::const_iterator cit = tokens.begin() + 1; cit < tokens.end(); ++cit) {
+	for (vector<string>::const_iterator cit = tokens.begin() + 2; cit < tokens.end(); ++cit) {
 		_allow.push_back(*cit);
 	}
 }
 
 void	ALocation::setAutoIndex( const vector<string>& tokens ) {
-	if (tokens.at(1) == "on")
+	if (tokens.at(2) == "on")
 		_autoIndex = true;
-	else if (tokens.at(1) == "off")
+	else if (tokens.at(2) == "off")
 		_autoIndex = false;
 	else {
 		stringstream ss;

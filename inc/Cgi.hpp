@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 11:41:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/15 12:32:43 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/20 13:03:49 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@ public:
 	Cgi( const Cgi& src );
 	Cgi& operator=( const Cgi& src );
 	~Cgi();
+
+	void	print( void ) const;
+	Cgi*	clone( void ) const;
 };
 
 #endif
