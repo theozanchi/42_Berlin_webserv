@@ -8,16 +8,18 @@ int main (int ac, char **av)
 //		return (0);
 //	}
 	(void) ac;
-	std::string httpRequest = av[1];
-	try {
-		Request newRequest(httpRequest);
-
-		std::cout << "OK" << std::endl;
-	}
-
-	catch (std::exception &e)
+	if (av[1])
 	{
-		std::cout << "KO " << e.what() << std::endl;
+		std::string httpRequest = av[1];
+		try {
+			Request newRequest(httpRequest);
+			std::cout << newRequest;
+		}
+
+		catch (std::exception &e)
+		{
+			std::cout<< RED << e.what() << RES << std::endl;
+		}
 	}
 
 	return (0);
