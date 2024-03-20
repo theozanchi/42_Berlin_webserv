@@ -1,31 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Upload.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/06 11:42:06 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 14:54:47 by tzanchi          ###   ########.fr       */
+/*   Created: 2024/03/07 14:46:25 by tzanchi           #+#    #+#             */
+/*   Updated: 2024/03/20 13:06:23 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "webserv.hpp"
+#ifndef UPLOAD_HPP
+# define UPLOAD_HPP
 
-int	main( int argc, char **argv ) {
-	(void)argv;
-	if (argc > 2) {
-		cerr << "Invalid argument: only one configuration file accepted (optional)" << endl;
-	}
-	else {
-		Configuration	config;
-	
-		try {
-			Parser::parseFile(config, "config/default.conf");
-			config.print();
-		}
-		catch (const std::exception& e) {
-			std::cerr << e.what() << std::endl;
-		}
-	}
-}
+# include "ALocation.hpp"
+
+class Upload : public ALocation{
+private:
+	string	_uploadStore;
+
+public:
+	Upload();
+	Upload( const Upload& src );
+	Upload& operator=( const Upload& src );
+	~Upload();
+
+	void	setUploadStore( const vector<string>& tokens );
+
+	void	print( void ) const;
+	Upload*	clone( void ) const;
+};
+
+#endif
