@@ -43,6 +43,7 @@ SRC			=	class/ALocation.cpp \
         			\
         			Request.cpp \
 				Response.cpp \
+				TCPServer.cpp \
 
 SRCS		=	$(addprefix ${SRCS_DIR}, ${SRC})
 SRC_NR		=	$(words ${SRCS})
@@ -65,7 +66,7 @@ $(OBJ_DIR)/%.o:	$(SRCS_DIR)%.cpp
 				${CC} ${CFLAGS} -I${INCS_DIR} -c $< -o $@; \
 				printf "${GREEN}"; \
 				printf " ${TICK}\n"; \
-				printf "${NC}"; 
+				printf "${NC}";
 
 clean:
 				@if [ ! -d "${OBJ_DIR}" ]; \
