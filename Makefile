@@ -31,7 +31,7 @@ BOLD		=	\033[1m
 TICK		=	✓
 
 SRC			=	main_request.cpp \
-				Request.cpp
+				Request.cpp \
 
 SRCS		=	$(addprefix ${SRCS_DIR}, ${SRC})
 SRC_NR		=	$(words ${SRCS})
