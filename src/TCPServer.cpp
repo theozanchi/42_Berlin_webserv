@@ -4,9 +4,63 @@
 // For Each port I will create a Server Socket that is bind and listens to the port
 // all will call the wait for connection function that will keep track of the client fds?
 // implement the Crtl + C Signal to end program with mem leaks
+TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
+    std::cout << "TCPServer Config file Param Constructor called" << std::endl;
 
-TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
-    std::cout << "TCPServer Default Constructor called" << std::endl;
+    //_nb_of_ports = config.getNbOfServers();
+    (void)config;
+    _nb_of_ports = 1;
+    _server_socket_fd = new int[_nb_of_ports];
+    const char host[10] = "127.0.0.1"; // only temporary until I get it from structure
+    const char port[5] = "8080"; // only temporary until I get it from structure
+
+    for (int i = 0; i < _nb_of_ports; i++)
+    {
+        int yes = 1;
+        int status;
+
+        //vector<Server> config_info;
+        //config_info.push_back(config.getServer(i));
+        // how do I get the host & port out of the structure?
+
+        struct addrinfo hints;
+        struct addrinfo *result;
+
+        std::memset(&hints, '\0', sizeof hints);
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_STREAM; // I cannot use NON_BLOCK here
+
+        if ((status = getaddrinfo(host, port, &hints, &result)) != 0) {
+            std::cout << "getaddrinfo failed" << std::endl;
+            throw SocketCreationFailed();
+        }
+
+        if ((_server_socket_fd[i] = socket(result->ai_family, result->ai_socktype, result->ai_protocol)) < 0) {
+            std::cout << "Socket failed" << std::endl;
+            throw SocketCreationFailed();
+        }
+
+        // to avoid bind() error "port already in use" when rerunning the server
+        if (setsockopt(_server_socket_fd[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
+            throw SocketCreationFailed();
+
+        // bind the socket to the specified IP and Port
+        // Where did I specify the IP?
+        if (bind(_server_socket_fd[i], result->ai_addr, result->ai_addrlen) < 0)
+            throw SocketCreationFailed();
+
+        // wait for incoming connections
+        // they are being queued and limited to system max connections
+        if (listen(_server_socket_fd[i], SOMAXCONN) < 0)
+            throw SocketCreationFailed();
+
+        freeaddrinfo(result);
+    }
+}
+
+
+TCPServer::TCPServer(int *ports, int nb_of_ports, std::string *hosts) : _nb_of_ports(nb_of_ports), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
+    std::cout << "TCPServer Int Array Param Constructor called" << std::endl;
     // I could also call getaddrinfo() to fill struct addrinfo
     // not sure if it fill in struct sockaddr as well
     // then use the struct addrinfo to pass parameters to the functions bind(), listen() etc
@@ -25,7 +79,7 @@ TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _
         _server_addr[i].sin_family = AF_INET;
         // sin_addr Internet Address in Network Byte Order
         // INADDR_ANY use my IPv4 address
-        _server_addr[i].sin_addr.s_addr = INADDR_ANY;
+        _server_addr[i].sin_addr.s_addr = inet_addr(hosts[i].c_str());
         // sin_port Port Number in Network Byte Order
         // htons() converts values btw host and network byte order
         _server_addr[i].sin_port = htons(_ports[i]);
@@ -75,7 +129,7 @@ TCPServer TCPServer::operator= (TCPServer const& cpy) {
 TCPServer::~TCPServer() {
     std::cout << "TCPServer Destructor called" << std::endl;
 
-    for (unsigned int i = 0; i < _n_poll_fds; i++)
+   /* for (unsigned int i = 0; i < _n_poll_fds; i++)
     {
         if (_poll_fds[i].fd > 0)
             close(_poll_fds[i].fd);
@@ -83,7 +137,7 @@ TCPServer::~TCPServer() {
 
     delete [] _server_socket_fd;
     delete [] _server_addr;
-    delete [] _ports;
+    delete [] _ports;*/
     //freeaddrinfo(return value of getaddrinfo)
 } // Destructor
 

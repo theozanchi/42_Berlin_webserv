@@ -15,8 +15,10 @@
 #include <fcntl.h>
 #include <csignal>
 #include <cstdlib>
+#include <netdb.h>
 
 #include "Request.hpp"
+#include "Configuration.hpp"
 
 extern bool sigint_flag;
 
@@ -40,8 +42,11 @@ private:
 
 	int is_server_socket(int pollfd);
 
+	TCPServer(); // Default Constructor
+
 public:
-	TCPServer(int *ports, int nb_of_ports); // Default Constructor
+	TCPServer(int *ports, int nb_of_ports, std::string *hosts); // Parametric Constructor int array
+	TCPServer(Configuration& config); // Parametric Constructor Config file
 	TCPServer(TCPServer const& cpy); // Copy Constructor
 	TCPServer operator= (TCPServer const& cpy); // Copy Assignment Operator
 	~TCPServer(); // Destructor

@@ -43,7 +43,7 @@ Server&	Configuration::getServer( size_t idx ) {
 	}
 	else {
 		throw (invalid_argument("Invalid index for getServer()"));
-	}		
+	}
 }
 
 Server&	Configuration::getServer( const string& flag ) {
@@ -53,6 +53,10 @@ Server&	Configuration::getServer( const string& flag ) {
 	else {
 		throw (invalid_argument("Invalid flag for getServer()"));
 	}
+}
+
+std::size_t	Configuration::getNbOfServers() {
+	return (_server.size());
 }
 
 /* Methods ****************************************************************** */

@@ -34,6 +34,7 @@ public:
 
 	Server&	getServer( size_t idx );
 	Server&	getServer( const string& flag );
+	std::size_t	getNbOfServers(); // needed for TCP Server Constructor
 
 	void	print( void ) const;
 };
