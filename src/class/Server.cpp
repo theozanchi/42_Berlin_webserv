@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/21 10:17:59 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/21 10:19:52 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,18 +89,21 @@ void	Server::setListen( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end(); ++it) {
 		_listen.push_back(atoi((*it).c_str()));
 	}
+	_isListenSet = true;
 }
 
 void	Server::setHost( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end(); ++it) {
 		_host.push_back(*it);
 	}
+	_isHostSet = true;
 }
 
 void	Server::setServerName( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end(); ++it) {
 		_serverName.push_back(*it);
 	}
+	_isServerNameSet = true;
 }
 
 void	Server::setErrorPage( const vector<string>& tokens ) {
@@ -112,22 +115,27 @@ void	Server::setErrorPage( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end() - 1; ++it) {
 		_errorPage.insert(make_pair(atoi((*it).c_str()), path));
 	}
+	_isErrorPageSet = true;
 }
 
 void	Server::setClientMaxBodySize( const vector<string>& tokens ) { 
 	_clientMaxBodySize = atoi(tokens.at(2).c_str());
+	_isClientMaxBodySizeSet = true;
 }
 
 void	Server::setClientBodyInFileOnly( const vector<string>& tokens ) {
-	tokens.at(2) == "on" ? _clientBodyInFileOnly = true : _clientBodyInFileOnly = false ;
+	tokens.at(2) == "on" ? _clientBodyInFileOnly = true : _clientBodyInFileOnly = false;
+	_isClientBodyInFileOnlySet = true;
 }
 
 void	Server::setClientBodyBufferSize( const vector<string>& tokens ) {
 	_clientBodyBufferSize = atoi(tokens.at(2).c_str());
+	_isClientBodyBufferSizeSet = true;
 }
 
 void	Server::setClientBodyTimeOut( const vector<string>& tokens ) {
 	_clientBodyTimeOut = atoi(tokens.at(2).c_str());
+	_isClientBodyTimeOutSet = true;
 }
 
 void	Server::addLocation( const vector<string>& tokens ) {
