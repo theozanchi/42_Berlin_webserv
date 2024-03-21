@@ -6,7 +6,7 @@
 #    By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/06 11:40:43 by tzanchi           #+#    #+#              #
-#    Updated: 2024/03/20 15:38:37 by tzanchi          ###   ########.fr        #
+#    Updated: 2024/03/21 09:13:10 by tzanchi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,13 +37,14 @@ SRC			=	class/ALocation.cpp \
 				class/StdLocation.cpp \
 				class/Upload.cpp \
 				\
+				parser/Parser_populateAttributes.cpp \
+				parser/Parser_utils.cpp \
+				parser/Parser.cpp\
 				main.cpp \
-				Parser_ServerBlock.cpp \
-				Parser.cpp \
-        			\
-        			Request.cpp \
-				Response.cpp \
 				TCPServer.cpp \
+        		\
+        		Request.cpp \
+				Response.cpp
 
 SRCS		=	$(addprefix ${SRCS_DIR}, ${SRC})
 SRC_NR		=	$(words ${SRCS})

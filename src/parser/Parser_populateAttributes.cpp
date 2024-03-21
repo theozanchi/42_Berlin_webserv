@@ -1,23 +1,72 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Parser_ServerBlock.cpp                             :+:      :+:    :+:   */
+/*   Parser_populateAttributes.cpp                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 18:18:20 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 15:03:07 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/21 09:07:00 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 
-bool	Parser::isValidServerLine( vector<string>& tokens ) {
-	if (tokens.size() != 3 || tokens.at(2) != "{")
-		return (false);
-	else
-		return (true);
+/* Initiliazing constant key maps ******************************************* */
+
+map<string, void (Server::*)(const vector<string>&)> populateServerKeys( void ) {
+	map<string, void (Server::*)(const vector<string>&)> keys;
+	
+	keys["listen"] = &Server::setListen;
+	keys["host"] = &Server::setHost;
+	keys["server_name"] = &Server::setServerName;
+	keys["error_page"] = &Server::setErrorPage;
+	keys["client_max_body_size"] = &Server::setClientMaxBodySize;
+	keys["client_body_in_file_only"] = &Server::setClientBodyInFileOnly;
+	keys["client_body_buffer_size"] = &Server::setClientBodyBufferSize;
+	keys["client_body_timeout"] = &Server::setClientBodyTimeOut;
+	keys["location"] = &Server::addLocation;
+
+	return (keys);
 }
+
+map<string, void (StdLocation::*)(const vector<string>&)> populateStdLocationKeys( void ) {
+	map<string, void (StdLocation::*)(const vector<string>&)> keys;
+
+	keys["location"] = &ALocation::setPath;
+	keys["allow"] = &ALocation::setAllow;
+	keys["autoindex"] = &ALocation::setAutoIndex;
+	keys["index"] = &StdLocation::setIndex;
+
+	return (keys);
+}
+
+map<string, void (Upload::*)(const vector<string>&)> populateUploadKeys( void ) {
+	map<string, void (Upload::*)(const vector<string>&)>	keys;
+	
+	keys["location"] = &ALocation::setPath;
+	keys["allow"] = &ALocation::setAllow;
+	keys["autoindex"] = &ALocation::setAutoIndex;
+	keys["allow"] = &Upload::setAllow;
+	keys["upload_store"] = &Upload::setUploadStore;
+
+	return (keys);
+}
+
+map<string, void (Cgi::*)(const vector<string>&)>	populateCgiKeys( void ) {
+	map<string, void (Cgi::*)(const vector<string>&)> keys;
+
+	keys["location"] = &ALocation::setPath;
+
+	return (keys);
+};
+
+const map<string, void (Server::*)(const vector<string>&)>		Parser::_serverKeys = populateServerKeys();
+const map<string, void (StdLocation::*)(const vector<string>&)>	Parser::_stdLocationKeys = populateStdLocationKeys();
+const map<string, void (Upload::*)(const vector<string>&)> 		Parser::_uploadKeys = populateUploadKeys();
+const map<string, void (Cgi::*)(const vector<string>&)>			Parser::_CgiKeys = populateCgiKeys();
+
+/* Initializing new server ************************************************** */
 
 void	Parser::initServerBlock( Configuration& config, vector<string>& tokens ) {
 	if (!isValidServerLine(tokens)) {
@@ -27,6 +76,8 @@ void	Parser::initServerBlock( Configuration& config, vector<string>& tokens ) {
 	}
 	config.addServer();
 }
+
+/* Populating attributes **************************************************** */
 
 void	Parser::populateServerAttribute( Configuration& config, const vector<string>& tokens ) {
 	map<string, void (Server::*)(const vector<string>&)>::const_iterator cit = _serverKeys.find(tokens.at(1));
