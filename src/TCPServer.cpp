@@ -225,8 +225,13 @@ void TCPServer::accept_connections() {
                         else
                         {
                             // process data from client
-                            std::cout << "Server recv following msg: " << recv_msg << std::endl;
+                            std::cout << "Server recv following msg: '" << recv_msg << "'" << std::endl;
                             std::cout << "Here parsing of request should happen" << std::endl;
+
+							std::string httpRequest = recv_msg;
+							Request newRequest(httpRequest);
+							std::cout << newRequest;
+
                             std::cout << "And appropriate HTTP Response should be send" << std::endl;
                             send(_client_socket_fd, msg, std::strlen(msg), 0);
                         }
