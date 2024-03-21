@@ -41,6 +41,7 @@ SRC			=	class/ALocation.cpp \
 				parser/Parser_utils.cpp \
 				parser/Parser.cpp\
 				main.cpp \
+				TCPServer.cpp \
         		\
         		Request.cpp \
 				Response.cpp
@@ -66,7 +67,7 @@ $(OBJ_DIR)/%.o:	$(SRCS_DIR)%.cpp
 				${CC} ${CFLAGS} -I${INCS_DIR} -c $< -o $@; \
 				printf "${GREEN}"; \
 				printf " ${TICK}\n"; \
-				printf "${NC}"; 
+				printf "${NC}";
 
 clean:
 				@if [ ! -d "${OBJ_DIR}" ]; \
