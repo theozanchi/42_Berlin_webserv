@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:03:31 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/21 10:15:17 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,11 @@ private:
 	int						_clientBodyBufferSize;
 	int						_clientBodyTimeOut;
 	map<string, ALocation*>	_location;
+
+	bool					_isListenSet, _isHostSet, _isServerNameSet, \
+							_isErrorPageSet, _isClientMaxBodySizeSet, \
+							_isClientBodyInFileOnlySet, _isClientBodyBufferSizeSet, \
+							_isClientBodyTimeOutSet;
 
 public:
 	Server();
@@ -64,6 +69,7 @@ public:
 	ALocation*		getLocation( const string& path_or_flag );
 
 	void			print( void ) const;
+	void			merge( const Server& src );
 };
 
 #endif

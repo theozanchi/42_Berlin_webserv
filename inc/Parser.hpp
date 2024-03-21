@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:24:42 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/21 09:12:04 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/21 09:17:49 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class Parser {
 private:
 	Parser() {}
 	~Parser() {}
-	
+
 	// Key maps
 	static const map<string, void (Server::*)(const vector<string>&)>		_serverKeys;
 	static const map<string, void (StdLocation::*)(const vector<string>&)>	_stdLocationKeys;

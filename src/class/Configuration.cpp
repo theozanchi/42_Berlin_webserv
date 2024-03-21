@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 19:00:06 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 14:56:43 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/21 09:57:42 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,11 @@ void	Configuration::print( void ) const {
 	for (vector<Server>::const_iterator cit = _server.begin(); cit < _server.end(); ++cit) {
 		cout << "\033[1;34mServer " << server_count++ << "\033[0m" << endl;
 		(*cit).print();
+	}
+}
+
+void	Configuration::merge( Configuration& src ) {
+	for (vector<Server>::iterator it = _server.begin(); it < _server.end(); ++it) {
+		(*it).merge(src.getServer("LAST"));
 	}
 }

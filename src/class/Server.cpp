@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:09:58 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/21 10:17:59 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,16 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-Server::Server() {}
+Server::Server()
+	:	_clientBodyInFileOnly(false),
+		_isListenSet(false),
+		_isHostSet(false),
+		_isServerNameSet(false),
+		_isErrorPageSet(false),
+		_isClientMaxBodySizeSet(false),
+		_isClientBodyInFileOnlySet(false),
+		_isClientBodyBufferSizeSet(false),
+		_isClientBodyTimeOutSet(false) {}
 
 Server::Server( const Server& src )
 	:	_listen(src._listen),
@@ -24,8 +33,15 @@ Server::Server( const Server& src )
 		_clientMaxBodySize(src._clientMaxBodySize),
 		_clientBodyInFileOnly(src._clientBodyInFileOnly),
 		_clientBodyBufferSize(src._clientBodyBufferSize),
-		_clientBodyTimeOut(src._clientBodyTimeOut) 
-{
+		_clientBodyTimeOut(src._clientBodyTimeOut),
+		_isListenSet(src._isListenSet),
+		_isHostSet(src._isHostSet),
+		_isServerNameSet(src._isServerNameSet),
+		_isErrorPageSet(src._isErrorPageSet),
+		_isClientMaxBodySizeSet(src._isClientMaxBodySizeSet),
+		_isClientBodyInFileOnlySet(src._isClientBodyInFileOnlySet),
+		_isClientBodyBufferSizeSet(src._isClientBodyBufferSizeSet),
+		_isClientBodyTimeOutSet(src._isClientBodyTimeOutSet) {
 	for (map<string, ALocation*>::const_iterator cit = src._location.begin(); cit != src._location.end(); ++cit) {
 			_location[cit->first] = cit->second->clone(); 
 		}
@@ -41,6 +57,14 @@ Server& Server::operator=( const Server& src ) {
 		_clientBodyInFileOnly = src._clientBodyInFileOnly;
 		_clientBodyBufferSize = src._clientBodyBufferSize;
 		_clientBodyTimeOut = src._clientBodyTimeOut;
+		_isListenSet = src._isListenSet;
+		_isHostSet = src._isHostSet;
+		_isServerNameSet = src._isServerNameSet;
+		_isErrorPageSet = src._isErrorPageSet;
+		_isClientMaxBodySizeSet = src._isClientMaxBodySizeSet;
+		_isClientBodyInFileOnlySet = src._isClientBodyInFileOnlySet;
+		_isClientBodyBufferSizeSet = src._isClientBodyBufferSizeSet;
+		_isClientBodyTimeOutSet = src._isClientBodyTimeOutSet;
 		
 		for (map<string, ALocation*>::iterator it = _location.begin(); it != _location.end(); ++it) {
 			delete it->second;
