@@ -1,12 +1,83 @@
 #include "../inc/TCPServer.hpp"
 
-// To Do
-// For Each port I will create a Server Socket that is bind and listens to the port
-// all will call the wait for connection function that will keep track of the client fds?
-// implement the Crtl + C Signal to end program with mem leaks
 
-TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
-    std::cout << "TCPServer Default Constructor called" << std::endl;
+// For Each host:port I will create a Server Socket that is bind and listens to the host:port
+
+TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
+    std::cout << "TCPServer Config file Param Constructor called" << std::endl;
+
+    _nb_of_servers = config.getNbOfServers();
+    std::cout << "Nb of Servers: " << _nb_of_servers << std::endl;
+    for (int i = 0; i < _nb_of_servers; i++)
+    {
+        Server& config_info = config.getServer(i);
+        _nb_of_ports += config_info.getNbOfPorts();
+    }
+    _server_socket_fd = new int[_nb_of_ports];
+
+    //const char host[10] = "127.0.0.1"; // only temporary until I get it from structure
+    //const char port[5] = "8080"; // only temporary until I get it from structure
+
+    for (int i = 0; i < _nb_of_servers; i++)
+    {
+        Server& config_info = config.getServer(i);
+        std::string host = config_info.getHost(0);
+        int nb_of_ports = config_info.getNbOfPorts();
+
+        for (int j = 0; j < nb_of_ports; j++)
+        {
+            int yes = 1;
+            int status;
+
+            std::string port = std::to_string(config_info.getListen(j));
+
+            std::cout << "Server " << i << ": Host: " << host << ", Port: " << port << std::endl;
+            struct addrinfo hints;
+            struct addrinfo *result;
+
+            std::memset(&hints, '\0', sizeof hints);
+            hints.ai_family = AF_INET;
+            hints.ai_socktype = SOCK_STREAM; // I cannot use NON_BLOCK here
+
+            if ((status = getaddrinfo(host.c_str(), port.c_str(), &hints, &result)) != 0) {
+                std::cout << "getaddrinfo failed" << std::endl;
+                throw SocketCreationFailed();
+            }
+
+            if ((_server_socket_fd[i] = socket(result->ai_family, result->ai_socktype, result->ai_protocol)) < 0) {
+                std::cout << "Socket failed" << std::endl;
+                throw SocketCreationFailed();
+            }
+
+            // to avoid bind() error "port already in use" when rerunning the server
+            if (setsockopt(_server_socket_fd[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
+                throw SocketCreationFailed();
+
+            // bind the socket to the specified IP and Port
+            // Where did I specify the IP?
+            if (bind(_server_socket_fd[i], result->ai_addr, result->ai_addrlen) < 0)
+            {
+                std::cout << "bind() failed" << std::endl;
+                throw SocketCreationFailed();
+            }
+
+            // wait for incoming connections
+            // they are being queued and limited to system max connections
+            if (listen(_server_socket_fd[i], SOMAXCONN) < 0)
+            {
+                std::cout << "listen failed" << std::endl;
+                throw SocketCreationFailed();
+            }
+
+            std::memset(&port, '\0', sizeof port);
+            freeaddrinfo(result);
+        }
+    }
+}
+
+
+TCPServer::TCPServer(int *ports, int nb_of_ports, std::string *hosts) : _nb_of_ports(nb_of_ports), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
+    std::cout << "TCPServer Int Array Param Constructor called" << std::endl;
     // I could also call getaddrinfo() to fill struct addrinfo
     // not sure if it fill in struct sockaddr as well
     // then use the struct addrinfo to pass parameters to the functions bind(), listen() etc
@@ -25,7 +96,7 @@ TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _
         _server_addr[i].sin_family = AF_INET;
         // sin_addr Internet Address in Network Byte Order
         // INADDR_ANY use my IPv4 address
-        _server_addr[i].sin_addr.s_addr = INADDR_ANY;
+        _server_addr[i].sin_addr.s_addr = inet_addr(hosts[i].c_str());
         // sin_port Port Number in Network Byte Order
         // htons() converts values btw host and network byte order
         _server_addr[i].sin_port = htons(_ports[i]);
@@ -34,7 +105,7 @@ TCPServer::TCPServer(int *ports, int nb_of_ports) : _nb_of_ports(nb_of_ports), _
         // AF_INET IPv4 vs IPv6
         // SOCK_STREAM FOR TCP vs UDP
         // SOCK_NONBLOCK to set socket in non-blocking mode SOCK_STREAM | SOCK_NONBLOCK
-        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) < 0) {
+        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
             throw SocketCreationFailed();
         }
 
@@ -75,7 +146,15 @@ TCPServer TCPServer::operator= (TCPServer const& cpy) {
 TCPServer::~TCPServer() {
     std::cout << "TCPServer Destructor called" << std::endl;
 
-    for (unsigned int i = 0; i < _n_poll_fds; i++)
+     for (unsigned int i = 0; i < _n_poll_fds; i++)
+    {
+        if (_poll_fds[i].fd > 0)
+            close(_poll_fds[i].fd);
+    }
+   
+    delete [] _server_socket_fd;
+   // Destructor for int array param Constructor
+   /* for (unsigned int i = 0; i < _n_poll_fds; i++)
     {
         if (_poll_fds[i].fd > 0)
             close(_poll_fds[i].fd);
@@ -83,13 +162,10 @@ TCPServer::~TCPServer() {
 
     delete [] _server_socket_fd;
     delete [] _server_addr;
-    delete [] _ports;
-    //freeaddrinfo(return value of getaddrinfo)
+    delete [] _ports;*/
 } // Destructor
 
 void TCPServer::wait_for_connection() {
-    // To Do
-    // non-blocking read from socket with timeout
     const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
                         <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";
 

@@ -31,20 +31,23 @@ int	main( int argc, char **argv ) {
 		Configuration	defaultConfig;
 
 		try {
-			if (argc == 2) {
-				Parser::parseFile(config, argv[1]);
+      if (argc == 2) {
+			  Parser::parseFile(config, argv[1]);
 			}
 			Parser::parseFile(defaultConfig, "config/default.conf");
 			config.merge(defaultConfig);
 			config.print();
 
-			int port[3] = { 8080, 9002, 8090 };
-    		int nb_of_ports = 3;
+			//int port[3] = { 8080, 9002, 8090 };
+    	//int nb_of_ports = 3;
+			//std::string hosts[3] = { "127.0.0.1", "127.1.0.1", "127.1.1.1" };
 
-			TCPServer aServer(port, nb_of_ports);
+			//TCPServer aServer(port, nb_of_ports, hosts);
+			TCPServer bServer(config);
 
 			signal(SIGINT, &handle_sigint);
-        	aServer.accept_connections();
+      //aServer.accept_connections();
+			bServer.accept_connections();
 		}
 		catch (const std::exception& e) {
 			std::cerr << e.what() << std::endl;

@@ -168,6 +168,10 @@ vector<int>	Server::getListen( void ) const {
 	return (_listen);
 }
 
+std::size_t		Server::getNbOfPorts() const {
+	return (_listen.size());
+}
+
 string	Server::getHost( size_t idx ) const {
 	if (idx >= _host.size()) {
 		stringstream ss;

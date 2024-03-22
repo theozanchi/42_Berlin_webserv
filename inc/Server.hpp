@@ -57,6 +57,7 @@ public:
 	void			addLocation( const ALocation& location );
 
 	int				getListen( size_t idx ) const;
+	std::size_t		getNbOfPorts() const;
 	vector<int>		getListen( void ) const;
 	string			getHost( size_t idx ) const;
 	vector<string>	getHost( void ) const;
