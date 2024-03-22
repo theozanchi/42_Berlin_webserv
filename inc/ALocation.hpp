@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:59 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:12:04 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:23:04 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,15 @@
 
 using namespace std;
 
+class Server;
+
 class ALocation {
 protected:
 	string			_path;
 	vector<string>	_allow;
 	bool			_autoIndex;
+
+	bool			_isPathSet, _isAllowSet, _isAutoIndexSet;
 
 public:
 	ALocation();
@@ -39,9 +43,11 @@ public:
 	vector<string>		getAllow( void ) const;
 	bool				isAllow( const string& method ) const;
 	bool				getAutoIndex( void ) const;
+	string				getType( void ) const;
 
 	virtual void		print( void ) const = 0;
 	virtual ALocation*	clone( void ) const = 0;
+	void				merge( Server& src );
 };
 
 #endif
