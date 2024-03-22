@@ -16,10 +16,14 @@
 #include <csignal>
 #include <cstdlib>
 #include <netdb.h>
+#include <sstream>
 
 #include "Request.hpp"
 #include "Configuration.hpp"
 #include "webserv.hpp"
+
+#define SSTR( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
 
 extern bool sigint_flag;
 

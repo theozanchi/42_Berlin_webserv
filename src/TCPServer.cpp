@@ -29,7 +29,7 @@ TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_s
             int yes = 1;
             int status;
 
-            std::string port = std::to_string(config_info.getListen(j));
+            std::string port = SSTR(config_info.getListen(j));
 
             std::cout << "Server " << i << ": Host: " << host << ", Port: " << port << std::endl;
             struct addrinfo hints;
