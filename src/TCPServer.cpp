@@ -1,9 +1,8 @@
 #include "../inc/TCPServer.hpp"
 
-// To Do
-// For Each port I will create a Server Socket that is bind and listens to the port
-// all will call the wait for connection function that will keep track of the client fds?
-// implement the Crtl + C Signal to end program with mem leaks
+
+// For Each host:port I will create a Server Socket that is bind and listens to the host:port
+
 TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
     std::cout << "TCPServer Config file Param Constructor called" << std::endl;
 
@@ -22,7 +21,7 @@ TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_s
     for (int i = 0; i < _nb_of_servers; i++)
     {
         Server& config_info = config.getServer(i);
-        std::string host = config_info.getHost(i);
+        std::string host = config_info.getHost(0);
         int nb_of_ports = config_info.getNbOfPorts();
 
         for (int j = 0; j < nb_of_ports; j++)
@@ -147,6 +146,14 @@ TCPServer TCPServer::operator= (TCPServer const& cpy) {
 TCPServer::~TCPServer() {
     std::cout << "TCPServer Destructor called" << std::endl;
 
+     for (unsigned int i = 0; i < _n_poll_fds; i++)
+    {
+        if (_poll_fds[i].fd > 0)
+            close(_poll_fds[i].fd);
+    }
+   
+    delete [] _server_socket_fd;
+   // Destructor for int array param Constructor
    /* for (unsigned int i = 0; i < _n_poll_fds; i++)
     {
         if (_poll_fds[i].fd > 0)
@@ -156,12 +163,9 @@ TCPServer::~TCPServer() {
     delete [] _server_socket_fd;
     delete [] _server_addr;
     delete [] _ports;*/
-    //freeaddrinfo(return value of getaddrinfo)
 } // Destructor
 
 void TCPServer::wait_for_connection() {
-    // To Do
-    // non-blocking read from socket with timeout
     const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
                         <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";
 
