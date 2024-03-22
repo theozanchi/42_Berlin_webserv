@@ -33,7 +33,8 @@ Request::Request(std::string &httpRequest) {
 	while ((i = httpRequest.find("\n")) != std::string::npos)
 	{
 		header = httpRequest.substr(0, i);
-		if (header.empty())
+		//std::cout << "Header: " << header << std::endl;
+		if (header.empty() || header[0] == '\r')
 			break;
 		this->parseKeyValue(header);
 		httpRequest.erase(0, i + 1);
@@ -128,11 +129,11 @@ void Request::parseKeyValue(std::string &header)
 	std::string	key;
 	std::string value;
 
-	if (header.empty())
+	if (header.empty() || header[0] == '\r')
 		return ;
 
 	// Extract key
-	end = header.find(':');
+	end = header.find_first_of(':');
 	if (end == std::string::npos)
 		throw (badRequestHeader());
 	key = header.substr(start, end);
@@ -142,7 +143,7 @@ void Request::parseKeyValue(std::string &header)
 	while (header[start] == ' ' || header[start] == '\t')
 		start++;
 	value = header.substr(start, header.length());
-
+	value.erase(value.find_last_not_of(" \n\r\t") + 1);
 	// Add a new header to the map container
 	_httpHeaders[key] = value;
 }
@@ -176,7 +177,7 @@ std::map<std::string, std::string> const Request::getHttpHeaders() const { retur
 // For printing:
 std::ostream & operator<< (std::ostream & ostr, Request const &req)
 {
-
+	ostr << GRN << "\nSTART OF REQUEST PARSING----------------------o" << RES << std::endl;
 	ostr << GRN << "Method: " << RES;
 	if (req.getMethod() == 0)
 		ostr << "GET" << std::endl;
@@ -190,13 +191,14 @@ std::ostream & operator<< (std::ostream & ostr, Request const &req)
 	ostr << GRN << "URI: " << RES << req.getUri() << std::endl;
 	ostr << GRN << "HTTP version: " << RES << req.getVersion() << std::endl;
 	ostr << GRN << "Host: " << RES << req.getHostname() << std::endl;
-	ostr << GRN << "\nHeaders: " << RES << std::endl;
+	ostr << GRN << "Headers: " << RES << std::endl;
 
 	std::map<std::string, std::string> headers = req.getHttpHeaders();
 
 	for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
 		ostr << it->first << ": " << it->second << std::endl;
 
-	ostr << GRN << "\nRequest body: \n" << RES << req.getRequestBody() << std::endl;
+	ostr << GRN << "Request body:" << RES << req.getRequestBody() << std::endl;
+	ostr << GRN << "END-------------------------------------------o\n" << RES << std::endl;
 	return (ostr);
 }

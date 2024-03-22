@@ -16,6 +16,8 @@
 #include <csignal>
 #include <cstdlib>
 
+#include "Request.hpp"
+
 extern bool sigint_flag;
 
 class TCPServer {
