@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:09:58 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:30:53 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,16 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-Server::Server() {}
+Server::Server()
+	:	_clientBodyInFileOnly(false),
+		_isListenSet(false),
+		_isHostSet(false),
+		_isServerNameSet(false),
+		_isErrorPageSet(false),
+		_isClientMaxBodySizeSet(false),
+		_isClientBodyInFileOnlySet(false),
+		_isClientBodyBufferSizeSet(false),
+		_isClientBodyTimeOutSet(false) {}
 
 Server::Server( const Server& src )
 	:	_listen(src._listen),
@@ -24,8 +33,15 @@ Server::Server( const Server& src )
 		_clientMaxBodySize(src._clientMaxBodySize),
 		_clientBodyInFileOnly(src._clientBodyInFileOnly),
 		_clientBodyBufferSize(src._clientBodyBufferSize),
-		_clientBodyTimeOut(src._clientBodyTimeOut) 
-{
+		_clientBodyTimeOut(src._clientBodyTimeOut),
+		_isListenSet(src._isListenSet),
+		_isHostSet(src._isHostSet),
+		_isServerNameSet(src._isServerNameSet),
+		_isErrorPageSet(src._isErrorPageSet),
+		_isClientMaxBodySizeSet(src._isClientMaxBodySizeSet),
+		_isClientBodyInFileOnlySet(src._isClientBodyInFileOnlySet),
+		_isClientBodyBufferSizeSet(src._isClientBodyBufferSizeSet),
+		_isClientBodyTimeOutSet(src._isClientBodyTimeOutSet) {
 	for (map<string, ALocation*>::const_iterator cit = src._location.begin(); cit != src._location.end(); ++cit) {
 			_location[cit->first] = cit->second->clone(); 
 		}
@@ -41,6 +57,14 @@ Server& Server::operator=( const Server& src ) {
 		_clientBodyInFileOnly = src._clientBodyInFileOnly;
 		_clientBodyBufferSize = src._clientBodyBufferSize;
 		_clientBodyTimeOut = src._clientBodyTimeOut;
+		_isListenSet = src._isListenSet;
+		_isHostSet = src._isHostSet;
+		_isServerNameSet = src._isServerNameSet;
+		_isErrorPageSet = src._isErrorPageSet;
+		_isClientMaxBodySizeSet = src._isClientMaxBodySizeSet;
+		_isClientBodyInFileOnlySet = src._isClientBodyInFileOnlySet;
+		_isClientBodyBufferSizeSet = src._isClientBodyBufferSizeSet;
+		_isClientBodyTimeOutSet = src._isClientBodyTimeOutSet;
 		
 		for (map<string, ALocation*>::iterator it = _location.begin(); it != _location.end(); ++it) {
 			delete it->second;
@@ -65,18 +89,21 @@ void	Server::setListen( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end(); ++it) {
 		_listen.push_back(atoi((*it).c_str()));
 	}
+	_isListenSet = true;
 }
 
 void	Server::setHost( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end(); ++it) {
 		_host.push_back(*it);
 	}
+	_isHostSet = true;
 }
 
 void	Server::setServerName( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end(); ++it) {
 		_serverName.push_back(*it);
 	}
+	_isServerNameSet = true;
 }
 
 void	Server::setErrorPage( const vector<string>& tokens ) {
@@ -88,22 +115,27 @@ void	Server::setErrorPage( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end() - 1; ++it) {
 		_errorPage.insert(make_pair(atoi((*it).c_str()), path));
 	}
+	_isErrorPageSet = true;
 }
 
 void	Server::setClientMaxBodySize( const vector<string>& tokens ) { 
 	_clientMaxBodySize = atoi(tokens.at(2).c_str());
+	_isClientMaxBodySizeSet = true;
 }
 
 void	Server::setClientBodyInFileOnly( const vector<string>& tokens ) {
-	tokens.at(2) == "on" ? _clientBodyInFileOnly = true : _clientBodyInFileOnly = false ;
+	tokens.at(2) == "on" ? _clientBodyInFileOnly = true : _clientBodyInFileOnly = false;
+	_isClientBodyInFileOnlySet = true;
 }
 
 void	Server::setClientBodyBufferSize( const vector<string>& tokens ) {
 	_clientBodyBufferSize = atoi(tokens.at(2).c_str());
+	_isClientBodyBufferSizeSet = true;
 }
 
 void	Server::setClientBodyTimeOut( const vector<string>& tokens ) {
 	_clientBodyTimeOut = atoi(tokens.at(2).c_str());
+	_isClientBodyTimeOutSet = true;
 }
 
 void	Server::addLocation( const vector<string>& tokens ) {
@@ -115,6 +147,10 @@ void	Server::addLocation( const vector<string>& tokens ) {
 		_location[tokens.at(2)] = new StdLocation();
 	
 	_location[tokens.at(2)]->setPath(tokens);
+}
+
+void	Server::addLocation( const ALocation& location ) {
+	_location[location.getPath()] = location.clone();
 }
 
 /* Getters ****************************************************************** */
@@ -198,6 +234,32 @@ ALocation*	Server::getLocation( const string& path_or_flag ) {
 	}
 }
 
+/* Checking set locations *************************************************** */
+
+bool	Server::isStdLocationSet( void ) const {
+	for (map<string, ALocation*>::const_iterator cit = _location.begin(); cit != _location.end(); ++cit) {
+		if (dynamic_cast<StdLocation*>(cit->second))
+			return (true);
+	}
+	return (false);
+}
+
+bool	Server::isUploadSet( void ) const {
+	for (map<string, ALocation*>::const_iterator cit = _location.begin(); cit != _location.end(); ++cit) {
+		if (dynamic_cast<Upload*>(cit->second))
+			return (true);
+	}
+	return (false);
+}
+
+bool	Server::isCgiSet( void ) const {
+	for (map<string, ALocation*>::const_iterator cit = _location.begin(); cit != _location.end(); ++cit) {
+		if (dynamic_cast<Cgi*>(cit->second))
+			return (true);
+	}
+	return (false);
+}
+
 /* Methods ****************************************************************** */
 
 void	Server::print( void ) const {
@@ -227,4 +289,32 @@ void	Server::print( void ) const {
 		cit->second->print();
 	}
 	cout << endl;
+}
+
+void	Server::merge( Server& src ) {
+	if (!_isListenSet)
+		_listen = src._listen;
+	if (!_isHostSet)
+		_host = src._host;
+	if (!_isServerNameSet)
+		_serverName = src._serverName;
+	if (!_isErrorPageSet)
+		_errorPage = src._errorPage;
+	if (!_isClientMaxBodySizeSet)
+		_clientMaxBodySize = src._clientMaxBodySize;
+	if (!_isClientBodyInFileOnlySet)
+		_clientBodyInFileOnly = src._clientBodyInFileOnly;
+	if (!_isClientBodyBufferSizeSet)
+		_clientBodyBufferSize = src._clientBodyBufferSize;
+	if (!_isClientBodyTimeOutSet)
+		_clientBodyTimeOut = src._clientBodyTimeOut;
+	for (map<string, ALocation*>::iterator it = _location.begin(); it != _location.end(); ++it) {
+		it->second->merge(src);
+	}
+	if (!isStdLocationSet())
+		addLocation(*src.getLocation("/"));
+	if (!isUploadSet())
+		addLocation(*src.getLocation("/upload"));
+	if (!isCgiSet())
+		addLocation(*src.getLocation("~\\.php$"));
 }

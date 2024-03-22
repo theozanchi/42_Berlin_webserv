@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:50:17 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:16:25 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:22:36 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void	Upload::setUploadStore( const vector<string>& tokens ) {
 		&& uploadStore.at(0) == uploadStore.at(uploadStore.length() - 1))
 		uploadStore = uploadStore.substr(1, uploadStore.length() - 2);
 	_uploadStore = uploadStore;
+	_isUploadStoreSet = true;
 }
 
 
@@ -65,4 +66,17 @@ void	Upload::print( void ) const {
 
 Upload*	Upload::clone( void ) const {
 	return (new Upload(*this));
+}
+
+void	Upload::merge( Upload* src ) {
+	if (src == NULL)
+		throw (logic_error("Impossible to merge a NULL location"));
+	if (!_isPathSet)
+		_path = src->_path;
+	if (!_isAllowSet)
+		_allow = src->_allow;
+	if (!_isAutoIndexSet)
+		_autoIndex = src->_autoIndex;
+	if (!_isUploadStoreSet)
+		_uploadStore = src->_uploadStore;
 }

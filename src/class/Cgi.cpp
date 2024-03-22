@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:46:37 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/21 08:55:47 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:21:41 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,15 @@ void	Cgi::print( void ) const {
 	}
 	cout << endl;
 	cout << "\tauto_index: " << _autoIndex << endl;
+}
+
+void	Cgi::merge( Cgi* src ) {
+	if (src == NULL)
+		throw (logic_error("Impossible to merge a NULL location"));
+	if (!_isPathSet)
+		_path = src->_path;
+	if (!_isAllowSet)
+		_allow = src->_allow;
+	if (!_isAutoIndexSet)
+		_autoIndex = src->_autoIndex;
 }

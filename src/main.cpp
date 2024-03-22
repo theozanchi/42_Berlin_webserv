@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:42:06 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 14:54:47 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:45:53 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,19 @@ void    handle_sigint(int sig)
 }
 
 int	main( int argc, char **argv ) {
-	(void)argv;
 	if (argc > 2) {
 		cerr << "Invalid argument: only one configuration file accepted (optional)" << endl;
 	}
 	else {
 		Configuration	config;
+		Configuration	defaultConfig;
 
 		try {
-			Parser::parseFile(config, "config/default.conf");
+			if (argc == 2) {
+				Parser::parseFile(config, argv[1]);
+			}
+			Parser::parseFile(defaultConfig, "config/default.conf");
+			config.merge(defaultConfig);
 			config.print();
 
 			int port[3] = { 8080, 9002, 8090 };

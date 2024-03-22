@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:48 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:15:08 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:30:35 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,28 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-ALocation::ALocation() {
-	_autoIndex = false;
-}
+ALocation::ALocation() 
+	:	_autoIndex(false), 
+		_isPathSet(false),
+		_isAllowSet(false),
+		_isAutoIndexSet(false) {}
 
 ALocation::ALocation( const ALocation& src )
 	:	_path(src._path),
 		_allow(src._allow),
-		_autoIndex(src._autoIndex)
-	{}
+		_autoIndex(src._autoIndex),
+		_isPathSet(src._isPathSet),
+		_isAllowSet(src._isAllowSet),
+		_isAutoIndexSet(src._isAutoIndexSet) {}
 
 ALocation& ALocation::operator=( const ALocation& src ) {
 	if (this != &src) {
 		_path = src._path;
 		_allow = src._allow;
 		_autoIndex = src._autoIndex;
+		_isPathSet = src._isPathSet;
+		_isAllowSet = src._isAllowSet;
+		_isAutoIndexSet = src._isAutoIndexSet;
 	}
 	return (*this);
 }
@@ -39,12 +46,14 @@ ALocation::~ALocation() {}
 
 void	ALocation::setPath( const vector<string>& tokens ) {
 	_path = tokens.at(2);
+	_isPathSet = true;
 }
 
 void	ALocation::setAllow( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator cit = tokens.begin() + 2; cit < tokens.end(); ++cit) {
 		_allow.push_back(*cit);
 	}
+	_isAllowSet = true;
 }
 
 void	ALocation::setAutoIndex( const vector<string>& tokens ) {
@@ -57,6 +66,7 @@ void	ALocation::setAutoIndex( const vector<string>& tokens ) {
 		ss << "Invalid config at line " << tokens.at(0) << ": \"" << tokens.at(1) << "\"not supported";
 		throw (ss.str());
 	}
+	_isAutoIndexSet = true;
 }
 
 /* Getters ****************************************************************** */
@@ -88,4 +98,30 @@ bool	ALocation::isAllow( const string& method ) const {
 
 bool	ALocation::getAutoIndex( void ) const {
 	return (_autoIndex);
+}
+
+string	ALocation::getType( void ) const {
+	if (dynamic_cast<const StdLocation*>(this))
+		return ("StdLocation");
+	else if (dynamic_cast<const Upload*>(this))
+		return ("Upload");
+	else if (dynamic_cast<const Cgi*>(this))
+		return ("Cgi");
+	else
+		return ("Unknown");
+}
+
+/* Methods ****************************************************************** */
+
+void	ALocation::merge( Server& src ) {
+	string	type = getType();
+	
+	if (type == "StdLocation")
+		dynamic_cast<StdLocation*>(this)->merge(dynamic_cast<StdLocation*>(src.getLocation("/")));
+	else if (type == "Upload")
+		dynamic_cast<Upload*>(this)->merge(dynamic_cast<Upload*>(src.getLocation("/upload")));
+	else if (type == "Cgi")
+		dynamic_cast<Cgi*>(this)->merge(dynamic_cast<Cgi*>(src.getLocation("~\\.php$")));
+	else
+		throw (invalid_argument("Unknown location type"));
 }
