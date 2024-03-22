@@ -130,8 +130,8 @@ void TCPServer::accept_connections() {
     // 1++ multiple fds are waiting to be processed. poll() API allows simultaneous connection with all fd in the queue on the listening socket
     // accept() and recv() APIs are completed when the EWOULDBLOCK is returned
     // The IBM version is a blocking I/O operation
-    const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
-                        <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";
+/*    const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
+                        <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n"; */
     char  recv_msg[1024];
 
     int     rt_val = 1;
@@ -225,15 +225,21 @@ void TCPServer::accept_connections() {
                         else
                         {
                             // process data from client
-                            std::cout << "Server recv following msg: '" << recv_msg << "'" << std::endl;
-                            std::cout << "Here parsing of request should happen" << std::endl;
+                            //std::cout << "Server recv following msg: '" << recv_msg << "'" << std::endl;
+                            //std::cout << "Here parsing of request should happen" << std::endl;
 
 							std::string httpRequest = recv_msg;
 							Request newRequest(httpRequest);
 							std::cout << newRequest;
 
-                            std::cout << "And appropriate HTTP Response should be send" << std::endl;
-                            send(_client_socket_fd, msg, std::strlen(msg), 0);
+							//Getting a response from Response class
+							Configuration tmpConfig; 	//this instance is only for my testing
+							Response newResponse(tmpConfig, newRequest);
+							std::cout << newResponse;
+							const char* msg_response = newResponse.getResponse(); //getting response message here
+
+                            //std::cout << "And appropriate HTTP Response should be send" << std::endl;
+                            send(_client_socket_fd, msg_response, std::strlen(msg_response), 0);
                         }
                     }
                 }

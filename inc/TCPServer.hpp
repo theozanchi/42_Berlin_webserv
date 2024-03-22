@@ -17,6 +17,8 @@
 #include <cstdlib>
 
 #include "Request.hpp"
+#include "Configuration.hpp"
+#include "Response.hpp"
 
 extern bool sigint_flag;
 
