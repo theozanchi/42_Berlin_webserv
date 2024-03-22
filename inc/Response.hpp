@@ -12,4 +12,14 @@
 
 #pragma once
 
-#include <iostream>
+#include "Request.hpp"
+#include "Configuration.hpp"
+
+class Response
+{
+private:
+	Response();
+public:
+	Response(Configuration const & config, Request const & request);
+
+};
