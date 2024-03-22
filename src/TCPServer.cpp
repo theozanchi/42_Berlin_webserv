@@ -7,54 +7,72 @@
 TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
     std::cout << "TCPServer Config file Param Constructor called" << std::endl;
 
-    //_nb_of_ports = config.getNbOfServers();
-    (void)config;
-    _nb_of_ports = 1;
-    _server_socket_fd = new int[_nb_of_ports];
-    const char host[10] = "127.0.0.1"; // only temporary until I get it from structure
-    const char port[5] = "8080"; // only temporary until I get it from structure
-
-    for (int i = 0; i < _nb_of_ports; i++)
+    _nb_of_servers = config.getNbOfServers();
+    std::cout << "Nb of Servers: " << _nb_of_servers << std::endl;
+    for (int i = 0; i < _nb_of_servers; i++)
     {
-        int yes = 1;
-        int status;
+        Server& config_info = config.getServer(i);
+        _nb_of_ports += config_info.getNbOfPorts();
+    }
+    _server_socket_fd = new int[_nb_of_ports];
 
-        //vector<Server> config_info;
-        //config_info.push_back(config.getServer(i));
-        // how do I get the host & port out of the structure?
+    //const char host[10] = "127.0.0.1"; // only temporary until I get it from structure
+    //const char port[5] = "8080"; // only temporary until I get it from structure
 
-        struct addrinfo hints;
-        struct addrinfo *result;
+    for (int i = 0; i < _nb_of_servers; i++)
+    {
+        Server& config_info = config.getServer(i);
+        std::string host = config_info.getHost(i);
+        int nb_of_ports = config_info.getNbOfPorts();
 
-        std::memset(&hints, '\0', sizeof hints);
-        hints.ai_family = AF_INET;
-        hints.ai_socktype = SOCK_STREAM; // I cannot use NON_BLOCK here
+        for (int j = 0; j < nb_of_ports; j++)
+        {
+            int yes = 1;
+            int status;
 
-        if ((status = getaddrinfo(host, port, &hints, &result)) != 0) {
-            std::cout << "getaddrinfo failed" << std::endl;
-            throw SocketCreationFailed();
+            std::string port = std::to_string(config_info.getListen(j));
+
+            std::cout << "Server " << i << ": Host: " << host << ", Port: " << port << std::endl;
+            struct addrinfo hints;
+            struct addrinfo *result;
+
+            std::memset(&hints, '\0', sizeof hints);
+            hints.ai_family = AF_INET;
+            hints.ai_socktype = SOCK_STREAM; // I cannot use NON_BLOCK here
+
+            if ((status = getaddrinfo(host.c_str(), port.c_str(), &hints, &result)) != 0) {
+                std::cout << "getaddrinfo failed" << std::endl;
+                throw SocketCreationFailed();
+            }
+
+            if ((_server_socket_fd[i] = socket(result->ai_family, result->ai_socktype, result->ai_protocol)) < 0) {
+                std::cout << "Socket failed" << std::endl;
+                throw SocketCreationFailed();
+            }
+
+            // to avoid bind() error "port already in use" when rerunning the server
+            if (setsockopt(_server_socket_fd[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
+                throw SocketCreationFailed();
+
+            // bind the socket to the specified IP and Port
+            // Where did I specify the IP?
+            if (bind(_server_socket_fd[i], result->ai_addr, result->ai_addrlen) < 0)
+            {
+                std::cout << "bind() failed" << std::endl;
+                throw SocketCreationFailed();
+            }
+
+            // wait for incoming connections
+            // they are being queued and limited to system max connections
+            if (listen(_server_socket_fd[i], SOMAXCONN) < 0)
+            {
+                std::cout << "listen failed" << std::endl;
+                throw SocketCreationFailed();
+            }
+
+            std::memset(&port, '\0', sizeof port);
+            freeaddrinfo(result);
         }
-
-        if ((_server_socket_fd[i] = socket(result->ai_family, result->ai_socktype, result->ai_protocol)) < 0) {
-            std::cout << "Socket failed" << std::endl;
-            throw SocketCreationFailed();
-        }
-
-        // to avoid bind() error "port already in use" when rerunning the server
-        if (setsockopt(_server_socket_fd[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
-            throw SocketCreationFailed();
-
-        // bind the socket to the specified IP and Port
-        // Where did I specify the IP?
-        if (bind(_server_socket_fd[i], result->ai_addr, result->ai_addrlen) < 0)
-            throw SocketCreationFailed();
-
-        // wait for incoming connections
-        // they are being queued and limited to system max connections
-        if (listen(_server_socket_fd[i], SOMAXCONN) < 0)
-            throw SocketCreationFailed();
-
-        freeaddrinfo(result);
     }
 }
 
@@ -88,7 +106,7 @@ TCPServer::TCPServer(int *ports, int nb_of_ports, std::string *hosts) : _nb_of_p
         // AF_INET IPv4 vs IPv6
         // SOCK_STREAM FOR TCP vs UDP
         // SOCK_NONBLOCK to set socket in non-blocking mode SOCK_STREAM | SOCK_NONBLOCK
-        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) < 0) {
+        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
             throw SocketCreationFailed();
         }
 

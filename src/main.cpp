@@ -31,7 +31,7 @@ int	main( int argc, char **argv ) {
 		Configuration	config;
 
 		try {
-			Parser::parseFile(config, "config/default.conf");
+			Parser::parseFile(config, "config/selina_test.conf");
 			config.print();
 
 			//int port[3] = { 8080, 9002, 8090 };

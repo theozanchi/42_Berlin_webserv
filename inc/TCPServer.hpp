@@ -19,6 +19,7 @@
 
 #include "Request.hpp"
 #include "Configuration.hpp"
+#include "webserv.hpp"
 
 extern bool sigint_flag;
 
@@ -28,6 +29,7 @@ private:
 	int	*_server_socket_fd;
 	struct sockaddr_in	*_server_addr;
 	int	*_ports;
+	int _nb_of_servers;
 	int	_nb_of_ports;
 
 // for poll()
