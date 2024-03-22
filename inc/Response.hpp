@@ -18,8 +18,18 @@
 class Response
 {
 private:
+	Request			_request;
+	Configuration	_config;
+	const char* 	_response;
+
 	Response();
 public:
-	Response(Configuration const & config, Request const & request);
+	Response(const Configuration &config, const Request &request);
+	Response(const Response &copy);
+	Response & operator=(const Response &copy);
+	~Response();
 
+	const char* getResponse() const;
 };
+
+std::ostream & operator<<(std::ostream &ostr, Response const &response);

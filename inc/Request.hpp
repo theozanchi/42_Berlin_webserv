@@ -117,4 +117,4 @@ public:
 	};
 };
 
-std::ostream & operator<<(std::ostream & ostr, Request const &request);
+std::ostream & operator<<(std::ostream &ostr, Request const &request);
