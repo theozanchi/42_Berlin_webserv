@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 19:00:06 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/21 09:57:42 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:43:27 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,11 @@ void	Configuration::print( void ) const {
 }
 
 void	Configuration::merge( Configuration& src ) {
+	if (_server.size() == 0) {
+		_server.push_back(src.getServer(0));
+		return ;
+	}
 	for (vector<Server>::iterator it = _server.begin(); it < _server.end(); ++it) {
-		(*it).merge(src.getServer("LAST"));
+		(*it).merge(src.getServer(0));
 	}
 }

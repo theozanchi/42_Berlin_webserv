@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:52:21 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:15:55 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:20:00 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,19 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-StdLocation::StdLocation() : ALocation() {}
+StdLocation::StdLocation() : ALocation(), _isIndexSet(false) {}
 
 StdLocation::StdLocation( const StdLocation& src )
 	:	ALocation(src),
-		_index(src._index)
+		_index(src._index),
+		_isIndexSet(src._isIndexSet)
 	{}
 
 StdLocation& StdLocation::operator=( const StdLocation& src ) {
 	if (this != &src) {
 		ALocation::operator=(src);
 		_index = src._index;
+		_isIndexSet = src._isIndexSet;
 	}
 	return (*this);
 }
@@ -40,6 +42,7 @@ void	StdLocation::setIndex( const vector<string>& tokens ) {
 		&& index.at(0) == index.at(index.length() - 1))
 		index = index.substr(1, index.length() - 2);
 	_index = index;
+	_isIndexSet = true;
 }
 
 
@@ -65,4 +68,17 @@ void	StdLocation::print( void ) const {
 
 StdLocation*	StdLocation::clone( void ) const {
 	return (new StdLocation(*this));
+}
+
+void	StdLocation::merge( StdLocation* src ) {
+	if (src == NULL)
+		throw (logic_error("Impossible to merge a NULL location"));
+	if (!_isPathSet)
+		_path = src->_path;
+	if (!_isAllowSet)
+		_allow = src->_allow;
+	if (!_isAutoIndexSet)
+		_autoIndex = src->_autoIndex;
+	if (!_isIndexSet)
+		_index = src->_index;
 }

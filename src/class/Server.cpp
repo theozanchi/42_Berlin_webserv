@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/21 10:19:52 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:30:53 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,10 @@ void	Server::addLocation( const vector<string>& tokens ) {
 	_location[tokens.at(2)]->setPath(tokens);
 }
 
+void	Server::addLocation( const ALocation& location ) {
+	_location[location.getPath()] = location.clone();
+}
+
 /* Getters ****************************************************************** */
 
 int	Server::getListen( size_t idx ) const {
@@ -230,6 +234,32 @@ ALocation*	Server::getLocation( const string& path_or_flag ) {
 	}
 }
 
+/* Checking set locations *************************************************** */
+
+bool	Server::isStdLocationSet( void ) const {
+	for (map<string, ALocation*>::const_iterator cit = _location.begin(); cit != _location.end(); ++cit) {
+		if (dynamic_cast<StdLocation*>(cit->second))
+			return (true);
+	}
+	return (false);
+}
+
+bool	Server::isUploadSet( void ) const {
+	for (map<string, ALocation*>::const_iterator cit = _location.begin(); cit != _location.end(); ++cit) {
+		if (dynamic_cast<Upload*>(cit->second))
+			return (true);
+	}
+	return (false);
+}
+
+bool	Server::isCgiSet( void ) const {
+	for (map<string, ALocation*>::const_iterator cit = _location.begin(); cit != _location.end(); ++cit) {
+		if (dynamic_cast<Cgi*>(cit->second))
+			return (true);
+	}
+	return (false);
+}
+
 /* Methods ****************************************************************** */
 
 void	Server::print( void ) const {
@@ -259,4 +289,32 @@ void	Server::print( void ) const {
 		cit->second->print();
 	}
 	cout << endl;
+}
+
+void	Server::merge( Server& src ) {
+	if (!_isListenSet)
+		_listen = src._listen;
+	if (!_isHostSet)
+		_host = src._host;
+	if (!_isServerNameSet)
+		_serverName = src._serverName;
+	if (!_isErrorPageSet)
+		_errorPage = src._errorPage;
+	if (!_isClientMaxBodySizeSet)
+		_clientMaxBodySize = src._clientMaxBodySize;
+	if (!_isClientBodyInFileOnlySet)
+		_clientBodyInFileOnly = src._clientBodyInFileOnly;
+	if (!_isClientBodyBufferSizeSet)
+		_clientBodyBufferSize = src._clientBodyBufferSize;
+	if (!_isClientBodyTimeOutSet)
+		_clientBodyTimeOut = src._clientBodyTimeOut;
+	for (map<string, ALocation*>::iterator it = _location.begin(); it != _location.end(); ++it) {
+		it->second->merge(src);
+	}
+	if (!isStdLocationSet())
+		addLocation(*src.getLocation("/"));
+	if (!isUploadSet())
+		addLocation(*src.getLocation("/upload"));
+	if (!isCgiSet())
+		addLocation(*src.getLocation("~\\.php$"));
 }
