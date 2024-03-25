@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/25 18:16:55 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/25 19:21:19 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,10 @@ private:
 	bool					isValidClientBodyBufferSize( const string& token );
 	bool					isValidClientBodyTimeOut( const string& token );
 
+	bool					isStdLocationSet( void ) const;
+	bool					isUploadSet( void ) const;
+	bool					isCgiSet( void ) const;
+
 public:
 	Server();
 	Server( const Server& src );
@@ -81,10 +85,6 @@ public:
 	int				getClientBodyBufferSize( void ) const;
 	int				getClientBodyTimeOut( void ) const;
 	ALocation*		getLocation( const string& path_or_flag );
-
-	bool			isStdLocationSet( void ) const;
-	bool			isUploadSet( void ) const;
-	bool			isCgiSet( void ) const;
 
 	void			print( void ) const;
 	void			merge( Server& src );
