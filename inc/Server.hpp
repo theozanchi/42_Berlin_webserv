@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/21 10:45:18 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/25 18:16:55 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <string>
 # include <map>
 # include <functional>
+# include <arpa/inet.h>
+# include <unistd.h>
 
 using namespace std;
 
@@ -28,7 +30,7 @@ private:
 	vector<string>			_host;
 	vector<string>			_serverName;
 	map<int, string>		_errorPage;
-	int						_clientMaxBodySize;
+	long long				_clientMaxBodySize;
 	bool					_clientBodyInFileOnly;
 	int						_clientBodyBufferSize;
 	int						_clientBodyTimeOut;
@@ -38,6 +40,16 @@ private:
 							_isErrorPageSet, _isClientMaxBodySizeSet, \
 							_isClientBodyInFileOnlySet, _isClientBodyBufferSizeSet, \
 							_isClientBodyTimeOutSet;
+
+	bool					isValidListen( const string& token );
+	bool					isValidHost( const string& token );
+	bool					isValidServerName( const string& token );
+	bool					isValidErrorPagePath( const string& token );
+	bool					isValidErrorPage( const string& token );
+	bool					isValidClientMaxBodySize( const string& token );
+	bool					isValidClientBodyInFileOnly( const string& token );
+	bool					isValidClientBodyBufferSize( const string& token );
+	bool					isValidClientBodyTimeOut( const string& token );
 
 public:
 	Server();
