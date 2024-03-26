@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/25 18:42:24 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/26 11:59:02 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,12 @@ bool	Server::isValidServerName( const string& token ) {
 	return (true);
 }
 
+bool	Server::isValidRoot( const string& token ) {
+	if (access(token.c_str(), R_OK) == -1)
+		return (false);
+	return (true);
+}
+
 bool	Server::isValidErrorPagePath( const string& token ) {
 	if (access(token.c_str(), R_OK) == -1)
 		return (false);
@@ -200,7 +206,7 @@ void	Server::setListen( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end(); ++it) {
 		if (!isValidListen(*it)) {
 			stringstream ss;
-			ss << "Invalid port at line " << tokens.at(0) << ": " << *it;
+			ss << "Warning: invalid " << *it << " port at line " << tokens.at(0) << ", using default value" << endl;
 			throw (invalid_argument(ss.str()));
 		}
 		_listen.push_back(atoi((*it).c_str()));
@@ -212,7 +218,7 @@ void	Server::setHost( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end(); ++it) {
 		if (!isValidHost(*it)) {
 			stringstream ss;
-			ss << "Invalid host at line " << tokens.at(0) << ": " << *it;
+			ss << "Warning: invalid " << *it << " host at line " << tokens.at(0) << ", using default value" << endl;
 			throw (invalid_argument(ss.str()));
 		}
 		_host.push_back(*it);
@@ -224,7 +230,7 @@ void	Server::setServerName( const vector<string>& tokens ) {
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end(); ++it) {
 		if (!isValidServerName(*it)) {
 			stringstream ss;
-			ss << "Invalid server name at line " << tokens.at(0) << ": " << *it;
+			ss << "Warning: invalid " << *it << " server name at line " << tokens.at(0) << ", using default value" << endl;
 			throw (invalid_argument(ss.str()));
 		}
 		_serverName.push_back(*it);
@@ -232,21 +238,39 @@ void	Server::setServerName( const vector<string>& tokens ) {
 	_isServerNameSet = true;
 }
 
+void	Server::setRoot( const vector<string>& tokens ) {
+	string	path = tokens.back();
+	if ((path.at(0) == '\'' || path.at(0) == '\"')
+		&& path.at(0) == path.at(path.length() - 1))
+		path = path.substr(1, path.length() - 2);
+	if (!isValidRoot(path)) {
+		stringstream ss;
+		ss << "Warning: invalid " << path << " root path at line " << tokens.at(0) << ", using default value" << endl;
+		throw (invalid_argument(ss.str()));
+	}
+	_root = path;
+	_isRootSet = true;
+}
+
 void	Server::setErrorPage( const vector<string>& tokens ) {
 	string	path = tokens.back();
 	if ((path.at(0) == '\'' || path.at(0) == '\"')
 		&& path.at(0) == path.at(path.length() - 1))
 		path = path.substr(1, path.length() - 2);
+	if (_root.at(_root.length() - 1) == '/')
+		path = _root + path;
+	else
+		path = _root + "/" + path;
 	if (!isValidErrorPagePath(path)) {
 		stringstream ss;
-		ss << "Invalid error page path at line " << tokens.at(0) << ": " << path;
+		ss << "Warning: invalid " << path << " path at line " << tokens.at(0) << ", using default value" << endl;
 		throw (invalid_argument(ss.str()));
 	}
 
 	for (vector<string>::const_iterator it = tokens.begin() + 2; it < tokens.end() - 1; ++it) {
 		if (!isValidErrorPage(*it)) {
 			stringstream ss;
-			ss << "Invalid error code at line " << tokens.at(0) << ": " << *it;
+			ss << "Warning: invalid " << *it << " error code at line " << tokens.at(0) << ", using default value" << endl;
 			throw (invalid_argument(ss.str()));
 		}
 		_errorPage.insert(make_pair(atoi((*it).c_str()), path));
@@ -257,7 +281,7 @@ void	Server::setErrorPage( const vector<string>& tokens ) {
 void	Server::setClientMaxBodySize( const vector<string>& tokens ) { 
 	if (!isValidClientMaxBodySize(tokens.at(2))) {
 		stringstream ss;
-		ss << "Invalid client_max_body_size at line " << tokens.at(0) << ": " << tokens.at(2);
+		ss << "Warning: invalid client_max_body_size at line " << tokens.at(0) << ": " << tokens.at(2) << ", using default value" << endl;
 		throw (invalid_argument(ss.str()));
 	}
 	char		unit = tokens.at(2).at(tokens.at(2).length() - 1);
@@ -278,7 +302,7 @@ void	Server::setClientMaxBodySize( const vector<string>& tokens ) {
 void	Server::setClientBodyInFileOnly( const vector<string>& tokens ) {
 	if (!isValidClientBodyInFileOnly(tokens.at(2))) {
 		stringstream ss;
-		ss << "Invalid client_body_in_file_only at line " << tokens.at(0) << ": " << tokens.at(2);
+		ss << "Warning: invalid client_body_in_file_only at line " << tokens.at(0) << ": " << tokens.at(2) << ", using default value" << endl;
 		throw (invalid_argument(ss.str()));
 	}
 	tokens.at(2) == "on" ? _clientBodyInFileOnly = true : _clientBodyInFileOnly = false;
@@ -288,7 +312,7 @@ void	Server::setClientBodyInFileOnly( const vector<string>& tokens ) {
 void	Server::setClientBodyBufferSize( const vector<string>& tokens ) {
 	if (!isValidClientBodyBufferSize(tokens.at(2))) {
 		stringstream ss;
-		ss << "Invalid client_body_buffer_size at line " << tokens.at(0) << ": " << tokens.at(2);
+		ss << "Warning: invalid client_body_buffer_size at line " << tokens.at(0) << ": " << tokens.at(2) << ", using default value" << endl;
 		throw (invalid_argument(ss.str()));
 	}
 	char		unit = tokens.at(2).at(tokens.at(2).length() - 1);
@@ -309,7 +333,7 @@ void	Server::setClientBodyBufferSize( const vector<string>& tokens ) {
 void	Server::setClientBodyTimeOut( const vector<string>& tokens ) {
 	if (!isValidClientBodyTimeOut(tokens.at(2))) {
 		stringstream ss;
-		ss << "Invalid client_body_time_out at line " << tokens.at(0) << ": " << tokens.at(2);
+		ss << "Warning: invalid client_body_time_out at line " << tokens.at(0) << ": " << tokens.at(2) << ", using default value" << endl;
 		throw (invalid_argument(ss.str()));
 	}
 	char	unit = tokens.at(2).at(tokens.at(2).length() - 1);
@@ -382,6 +406,10 @@ string	Server::getServerName( size_t idx ) const {
 
 vector<string>	Server::getServerName( void ) const {
 	return (_serverName);
+}
+
+string	Server::getRoot( void ) const {
+	return (_root);
 }
 
 string	Server::getErrorPage( int code ) const {
@@ -468,6 +496,7 @@ void	Server::print( void ) const {
 		cout << *cit << " ";
 	}
 	cout << endl;
+	cout << "root: " << _root << endl;
 	for (map<int, string>::const_iterator cit = _errorPage.begin(); cit != _errorPage.end(); ++cit) {
 		cout << "error_page " << cit->first << ": " << cit->second << endl;
 	}
@@ -488,6 +517,8 @@ void	Server::merge( Server& src ) {
 		_host = src._host;
 	if (!_isServerNameSet)
 		_serverName = src._serverName;
+	if (!_isRootSet)
+		_root = src._root;
 	if (!_isErrorPageSet)
 		_errorPage = src._errorPage;
 	if (!_isClientMaxBodySizeSet)

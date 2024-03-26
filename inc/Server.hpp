@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/25 19:21:19 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/26 11:45:43 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ private:
 	vector<int>				_listen;
 	vector<string>			_host;
 	vector<string>			_serverName;
+	string					_root;
 	map<int, string>		_errorPage;
 	long long				_clientMaxBodySize;
 	bool					_clientBodyInFileOnly;
@@ -37,13 +38,14 @@ private:
 	map<string, ALocation*>	_location;
 
 	bool					_isListenSet, _isHostSet, _isServerNameSet, \
-							_isErrorPageSet, _isClientMaxBodySizeSet, \
+							_isRootSet, _isErrorPageSet, _isClientMaxBodySizeSet, \
 							_isClientBodyInFileOnlySet, _isClientBodyBufferSizeSet, \
 							_isClientBodyTimeOutSet;
 
 	bool					isValidListen( const string& token );
 	bool					isValidHost( const string& token );
 	bool					isValidServerName( const string& token );
+	bool					isValidRoot( const string& token );
 	bool					isValidErrorPagePath( const string& token );
 	bool					isValidErrorPage( const string& token );
 	bool					isValidClientMaxBodySize( const string& token );
@@ -64,6 +66,7 @@ public:
 	void			setListen( const vector<string>& tokens );
 	void			setHost( const vector<string>& tokens );
 	void			setServerName( const vector<string>& tokens );
+	void			setRoot( const vector<string>& tokens );
 	void			setErrorPage( const vector<string>& tokens );
 	void			setClientMaxBodySize( const vector<string>& tokens );
 	void			setClientBodyInFileOnly( const vector<string>& tokens );
@@ -79,6 +82,7 @@ public:
 	vector<string>	getHost( void ) const;
 	string			getServerName( size_t idx ) const;
 	vector<string>	getServerName( void ) const;
+	string			getRoot( void ) const;
 	string			getErrorPage( int code ) const;
 	int				getClientMaxBodySize( void ) const;
 	bool			getClientBodyInFileOnly( void ) const;

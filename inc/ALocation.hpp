@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:59 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/22 10:23:04 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/26 10:38:54 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,10 @@ protected:
 	bool			_autoIndex;
 
 	bool			_isPathSet, _isAllowSet, _isAutoIndexSet;
+
+	bool			isValidPath( const string& token );
+	bool			isValidAllow( const string& token );
+	bool			isValidAutoIndex( const string& token );
 
 public:
 	ALocation();

@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 18:18:20 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/25 19:33:25 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/26 11:40:41 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ map<string, void (Server::*)(const vector<string>&)> populateServerKeys( void ) 
 	keys["listen"] = &Server::setListen;
 	keys["host"] = &Server::setHost;
 	keys["server_name"] = &Server::setServerName;
+	keys["root"] = &Server::setRoot;
 	keys["error_page"] = &Server::setErrorPage;
 	keys["client_max_body_size"] = &Server::setClientMaxBodySize;
 	keys["client_body_in_file_only"] = &Server::setClientBodyInFileOnly;
