@@ -30,6 +30,7 @@ extern bool sigint_flag;
 
 class TCPServer {
 private:
+	Configuration _config;
 // Sockets Server
 	int	*_server_socket_fd;
 	struct sockaddr_in	*_server_addr;
