@@ -24,16 +24,18 @@ private:
 	Request			_request;
 	Configuration	_config;
 	std::string 	_response;
-
 	Response();
+
 public:
 	Response(const Configuration &config, const Request &request);
 	Response(const Response &copy);
 	Response & operator=(const Response &copy);
 	~Response();
 
-	void buildResponse();
-	std::string buildStatusLine();
+	void checkBuildGetResponse();  // GET METHOD
+	void checkBuildPostResponse(); // POST METHOD
+	void checkBuildDeleteResponse();   // DELETE METHOD
+
 	std::string readFromFile(std::string const & fileName);
 
 	std::string const & getResponse() const;
