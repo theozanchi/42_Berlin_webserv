@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:46:25 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:16:15 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:22:19 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 class Upload : public ALocation{
 private:
 	string	_uploadStore;
+	bool	_isUploadStoreSet;
 
 public:
 	Upload();
@@ -29,8 +30,9 @@ public:
 
 	string	getUploadStore( void ) const;
 
-	void	print( void ) const;
 	Upload*	clone( void ) const;
+	void	print( void ) const;
+	void	merge( Upload* src );
 };
 
 #endif

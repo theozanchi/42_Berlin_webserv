@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:03:31 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/21 10:45:18 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,11 @@ private:
 	int						_clientBodyTimeOut;
 	map<string, ALocation*>	_location;
 
+	bool					_isListenSet, _isHostSet, _isServerNameSet, \
+							_isErrorPageSet, _isClientMaxBodySizeSet, \
+							_isClientBodyInFileOnlySet, _isClientBodyBufferSizeSet, \
+							_isClientBodyTimeOutSet;
+
 public:
 	Server();
 	Server( const Server& src );
@@ -49,8 +54,10 @@ public:
 	void			setClientBodyBufferSize( const vector<string>& tokens );
 	void			setClientBodyTimeOut( const vector<string>& tokens );
 	void			addLocation( const vector<string>& tokens );
+	void			addLocation( const ALocation& location );
 
 	int				getListen( size_t idx ) const;
+	std::size_t		getNbOfPorts() const;
 	vector<int>		getListen( void ) const;
 	string			getHost( size_t idx ) const;
 	vector<string>	getHost( void ) const;
@@ -63,7 +70,12 @@ public:
 	int				getClientBodyTimeOut( void ) const;
 	ALocation*		getLocation( const string& path_or_flag );
 
+	bool			isStdLocationSet( void ) const;
+	bool			isUploadSet( void ) const;
+	bool			isCgiSet( void ) const;
+
 	void			print( void ) const;
+	void			merge( Server& src );
 };
 
 #endif

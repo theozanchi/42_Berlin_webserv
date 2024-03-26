@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:51:45 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 17:15:36 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/22 10:18:49 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 class StdLocation : public ALocation {
 private:
 	string	_index;
+	bool	_isIndexSet;
 
 public:
 	StdLocation();
@@ -31,6 +32,7 @@ public:
 
 	void			print( void ) const;
 	StdLocation*	clone( void ) const;
+	void			merge( StdLocation* src );
 };
 
 #endif

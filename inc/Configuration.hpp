@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 18:59:46 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/20 13:10:33 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/21 09:57:26 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,10 @@ public:
 
 	Server&	getServer( size_t idx );
 	Server&	getServer( const string& flag );
+	std::size_t	getNbOfServers(); // needed for TCP Server Constructor
 
 	void	print( void ) const;
+	void	merge( Configuration& src );
 };
 
 #endif
