@@ -44,15 +44,15 @@ void Response::checkBuildGetResponse()								//GET METHOOD
 	// DO CHECKS HERE:
 
 	// Reading from HTML-file:
-	_response = this->readFromFile("./content/default_website/index.html");
+	_response = this->readFromFile("./content/default_website/index.html");		// Replase with a URI variable
 }
 
-void checkBuildPostResponse() 										// POST METHOD
+void Response::checkBuildPostResponse() 										// POST METHOD
 {
 	std::cout << RED << "POST METHOD to be implemented here" << RES << std::endl;
 }
 
-void checkBuildDeleteResponse()  									// DELETE METHOD
+void Response::checkBuildDeleteResponse()  									// DELETE METHOD
 {
 	std::cout << RED << "DELETE METHOD to be implemented here" << RES << std::endl;
 }
