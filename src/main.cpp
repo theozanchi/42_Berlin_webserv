@@ -22,17 +22,22 @@ void    handle_sigint(int sig)
     return ;
 }
 
-int	main( int argc, char **argv ) {
-	if (argc > 2) {
+int	main( int argc, char **argv )
+{
+	if (argc > 2)
+	{
 		cerr << "Invalid argument: only one configuration file accepted (optional)" << endl;
 	}
-	else {
+	else
+	{
 		Configuration	config;
 		Configuration	defaultConfig;
 
-		try {
-      		if (argc == 2) {
-			  Parser::parseFile(config, argv[1]);
+		try
+		{
+      			if (argc == 2)
+			{
+				Parser::parseFile(config, argv[1]);
 			}
 			Parser::parseFile(defaultConfig, "config/default.conf");
 			config.merge(defaultConfig);
@@ -40,27 +45,27 @@ int	main( int argc, char **argv ) {
 
 			int nb_of_servers = config.getNbOfServers();
 			int nb_of_ports = 0;
-    		std::cout << "Nb of Servers: " << nb_of_servers << std::endl;
+    			std::cout << "Nb of Servers: " << nb_of_servers << std::endl;
 
 			for (int i = 0; i < nb_of_servers; i++)
-    		{
-        		Server& config_info = config.getServer(i);
-        		nb_of_ports += config_info.getNbOfPorts();
-    		}
+    			{
+        			Server& config_info = config.getServer(i);
+        			nb_of_ports += config_info.getNbOfPorts();
+    			}
 
 			std::cout << "Nb of Ports: " << nb_of_ports << std::endl;
 
 			std::string *hosts = new std::string[nb_of_ports];
 			int	*ports = new int[nb_of_ports];
-			int k = 0;
+			int	k = 0;
 
 			for (int i = 0; i < nb_of_servers; i++)
-    		{
-        		Server& config_info = config.getServer(i);
-        		int nb_server_ports = config_info.getNbOfPorts();
+    			{
+        			Server& config_info = config.getServer(i);
+        			int nb_server_ports = config_info.getNbOfPorts();
 
-        		for (int j = 0; j < nb_server_ports; j++)
-        		{
+        			for (int j = 0; j < nb_server_ports; j++)
+        			{
 					hosts[k] = config_info.getHost(0);
 					ports[k] = config_info.getListen(j);
 					k++;
@@ -75,12 +80,14 @@ int	main( int argc, char **argv ) {
 			TCPServer aServer(ports, nb_of_ports, hosts);
 
 			signal(SIGINT, &handle_sigint);
-      		aServer.accept_connections();
+      			aServer.accept_connections();
 		}
-		catch (const std::exception& e) {
+		catch (const std::exception& e)
+		{
 			std::cerr << e.what() << std::endl;
 		}
-		catch (...) {
+		catch (...)
+		{
 			std::cerr << "other kind of error" << std::endl;
 		}
 	}
