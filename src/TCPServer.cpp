@@ -236,10 +236,13 @@ void TCPServer::accept_connections() {
 							Configuration tmpConfig; 	//this instance is only for my testing
 							Response newResponse(tmpConfig, newRequest);
 							std::cout << newResponse;
-							const char* msg_response = newResponse.getResponse(); //getting response message here
+
+							std::string response = newResponse.getResponse();
+							const char* msg_response = response.c_str();
 
                             //std::cout << "And appropriate HTTP Response should be send" << std::endl;
                             send(_client_socket_fd, msg_response, std::strlen(msg_response), 0);
+							std::cout << "Message sent" << std::endl;
                         }
                     }
                 }

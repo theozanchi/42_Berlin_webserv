@@ -12,6 +12,9 @@
 
 #pragma once
 
+# include <fstream>
+# include <iostream>
+
 #include "Request.hpp"
 #include "Configuration.hpp"
 
@@ -20,7 +23,7 @@ class Response
 private:
 	Request			_request;
 	Configuration	_config;
-	const char* 	_response;
+	std::string 	_response;
 
 	Response();
 public:
@@ -29,7 +32,20 @@ public:
 	Response & operator=(const Response &copy);
 	~Response();
 
-	const char* getResponse() const;
+	void buildResponse();
+	std::string buildStatusLine();
+	std::string readFromFile(std::string const & fileName);
+
+	std::string const & getResponse() const;
+
+	class badResponse : public std::exception
+	{
+	public:
+		virtual const char* what() const throw()
+		{
+			return ("Bad response");
+		}
+	};
 };
 
 std::ostream & operator<<(std::ostream &ostr, Response const &response);
