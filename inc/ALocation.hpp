@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:59 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/26 17:42:03 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 15:51:39 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ protected:
 
 	bool			_isPathSet, _isAllowSet, _isAutoIndexSet;
 
-	bool			isValidPath( const string& token );
+	bool			isValidPath( const string& token, int type );
 	bool			isValidAllow( const string& token );
 	bool			isValidAutoIndex( const string& token );
 
@@ -46,7 +46,7 @@ public:
 	string				getPath( void ) const;
 	string				getAllow( size_t idx ) const;
 	vector<string>		getAllow( void ) const;
-	bool				isAllow( const string& method ) const;
+	bool				isAllowed( const string& method ) const;
 	bool				getAutoIndex( void ) const;
 	string				getType( void ) const;
 

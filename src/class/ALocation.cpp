@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:48 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/26 17:42:20 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 15:56:41 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,39 +44,89 @@ ALocation::~ALocation() {}
 
 /* Breakline **************************************************************** */
 
-// bool	ALocation::isValidPath( const string& token ) {
-	
-// }
+bool	ALocation::isValidPath( const string& token, int type ) {
+	if (access(token.c_str(), type) == -1)
+		return (false);
+	return (true);
+}
+
+bool	ALocation::isValidAllow( const string& token ) {
+	if (token != "GET"
+		&& token != "POST"
+		&& token != "DELETE")
+		return (false);
+	return (true);
+}
+
+bool	ALocation::isValidAutoIndex( const string& token ) {
+	if (token != "on" && token != "1" && token != "yes"
+		&& token != "off" && token != "0" && token != "no")
+		return (false);
+	return (true);
+}
 
 /* Setters ****************************************************************** */
 
 void	ALocation::setPath( const vector<string>& tokens ) {
+	string	type = this->getType();
+	if ((type == "StdLocation" && !isValidPath(tokens.at(2), F_OK))
+		|| (type == "Upload" && !isValidPath(tokens.at(2), W_OK))) {
+		stringstream ss;
+		ss << "Warning: invalid " << tokens.at(2) << " path at line " << tokens.at(0) << ", using default value" << endl;
+		throw (invalid_argument(ss.str()));
+	}
 	_path = tokens.at(2);
 	_isPathSet = true;
 }
 
 void	ALocation::setPath( const string& path ) {
+	string	type = this->getType();
+	if ((type == "StdLocation" && !isValidPath(path, F_OK))
+		|| (type == "Upload" && !isValidPath(path, W_OK))) {
+		stringstream ss;
+		ss << "Warning: invalid " << path << " for location, using default value" << endl;
+		throw (invalid_argument(ss.str()));
+	}
 	_path = path;
 	_isPathSet = true;
 }
 
 void	ALocation::setAllow( const vector<string>& tokens ) {
+	vector<string>	bin;
 	for (vector<string>::const_iterator cit = tokens.begin() + 2; cit < tokens.end(); ++cit) {
-		_allow.push_back(*cit);
+		if (isValidAllow(*cit))
+			_allow.push_back(*cit);
+		else
+			bin.push_back(*cit);
 	}
-	_isAllowSet = true;
+	if (bin.size() > 0) {
+		stringstream ss;
+		ss << "Warning: invalid method";
+		if (bin.size() > 1)
+			ss << "s";
+		ss << " ";
+		for (vector<string>::const_iterator cit = bin.begin(); cit < bin.end(); ++cit) {
+			ss << *cit;
+			if (cit + 1 < bin.end())
+				ss << ", ";
+		}
+		ss << " at line " << tokens.at(0) << ", ignored" << endl;
+		throw (invalid_argument(ss.str()));
+	}
+	if (_allow.size() > 0)
+		_isAllowSet = true;
 }
 
 void	ALocation::setAutoIndex( const vector<string>& tokens ) {
-	if (tokens.at(2) == "on")
-		_autoIndex = true;
-	else if (tokens.at(2) == "off")
-		_autoIndex = false;
-	else {
+	if (!isValidAutoIndex(tokens.at(2))) {
 		stringstream ss;
-		ss << "Invalid config at line " << tokens.at(0) << ": \"" << tokens.at(1) << "\"not supported";
-		throw (ss.str());
+		ss << "Warning: invalid "<< tokens.at(2) << " autoindex value at line " << tokens.at(0) << ", using default value" << endl;
+		throw (invalid_argument(ss.str()));
 	}
+	if (tokens.at(2) == "on" || tokens.at(2) == "1" || tokens.at(2) == "yes")
+		_autoIndex = true;
+	else
+		_autoIndex = false;
 	_isAutoIndexSet = true;
 }
 
@@ -99,7 +149,7 @@ vector<string>	ALocation::getAllow( void ) const {
 	return (_allow);
 }
 
-bool	ALocation::isAllow( const string& method ) const {
+bool	ALocation::isAllowed( const string& method ) const {
 	for (vector<string>::const_iterator cit = _allow.begin(); cit < _allow.end(); ++cit) {
 		if (*cit == method)
 			return (true);

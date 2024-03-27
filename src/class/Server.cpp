@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/26 17:52:29 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 15:58:00 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,8 @@ bool	Server::isValidClientMaxBodySize( const string& token ) {
 }
 
 bool	Server::isValidClientBodyInFileOnly( const string& token ) {
-	if (token != "on" && token != "off")
+	if (token != "on" && token != "1" && token != "yes"
+		&& token != "off" && token != "0" && token != "no")
 		return (false);
 	return (true);
 }
@@ -305,7 +306,10 @@ void	Server::setClientBodyInFileOnly( const vector<string>& tokens ) {
 		ss << "Warning: invalid client_body_in_file_only at line " << tokens.at(0) << ": " << tokens.at(2) << ", using default value" << endl;
 		throw (invalid_argument(ss.str()));
 	}
-	tokens.at(2) == "on" ? _clientBodyInFileOnly = true : _clientBodyInFileOnly = false;
+	if (tokens.at(2) == "on" || tokens.at(2) == "1" || tokens.at(2) == "yes")
+		_clientBodyInFileOnly = true;
+	else
+		_clientBodyInFileOnly = false;
 	_isClientBodyInFileOnlySet = true;
 }
 
@@ -512,7 +516,6 @@ void	Server::print( void ) const {
 	cout << "client_body_buffer_size: " << _clientBodyBufferSize << endl;
 	cout << "client_body_time_out: " << _clientBodyTimeOut << endl;
 	for (map<string, ALocation*>::const_iterator cit = _location.begin(); cit != _location.end(); ++cit) {
-		cout << cit->first << ": ";
 		cit->second->print();
 	}
 	cout << endl;
