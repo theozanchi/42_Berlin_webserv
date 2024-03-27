@@ -79,7 +79,6 @@
     }
 }*/
 
-
 TCPServer::TCPServer(Configuration & config, int *ports, int nb_of_ports, std::string *hosts) : _config(config), _nb_of_ports(nb_of_ports), _n_poll_fds(0), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
     std::cout << "TCPServer Int Array Param Constructor called" << std::endl;
     // I could also call getaddrinfo() to fill struct addrinfo

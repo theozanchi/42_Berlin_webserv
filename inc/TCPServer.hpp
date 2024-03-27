@@ -54,6 +54,7 @@ private:
 	TCPServer(); // Default Constructor
 
 public:
+
 	TCPServer(Configuration & config, int *ports, int nb_of_ports, std::string *hosts); // Parametric Constructor int array
 	//TCPServer(Configuration& config); // Parametric Constructor Config file
 	TCPServer(TCPServer const& cpy); // Copy Constructor
