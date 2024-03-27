@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/27 15:58:00 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 16:17:41 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -361,12 +361,11 @@ void	Server::addLocation( const vector<string>& tokens ) {
 	else
 		path = _root + "/" + path;
 	if (tokens.at(2).at(0) == '~')
-		_location[tokens.at(2)] = new Cgi();
+		_location[tokens.at(2)] = new Cgi(*this);
 	else if (tokens.at(2).find("upload") != string::npos)
-		_location[tokens.at(2)] = new Upload();
+		_location[tokens.at(2)] = new Upload(*this);
 	else
-		_location[tokens.at(2)] = new StdLocation();
-	
+		_location[tokens.at(2)] = new StdLocation(*this);
 	_location[tokens.at(2)]->setPath(path);
 }
 

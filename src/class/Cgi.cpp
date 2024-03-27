@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:46:37 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/22 10:21:41 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 16:18:51 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-Cgi::Cgi() : ALocation() {}
+Cgi::Cgi( const Server& server ) : ALocation(server) {}
 
 Cgi::Cgi( const Cgi& src ) : ALocation(src) {}
 

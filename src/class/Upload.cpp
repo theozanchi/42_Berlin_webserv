@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:50:17 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/22 10:22:36 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 16:19:27 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-Upload::Upload() : ALocation() {}
+Upload::Upload( const Server& server ) : ALocation(server) {}
 
 Upload::Upload( const Upload& src )
 	:	ALocation(src),

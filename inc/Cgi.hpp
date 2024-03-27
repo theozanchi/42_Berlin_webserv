@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 11:41:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/22 10:21:23 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 16:18:38 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ class Cgi : public ALocation {
 private:
 
 public:
-	Cgi();
+	Cgi( const Server& server );
 	Cgi( const Cgi& src );
 	Cgi& operator=( const Cgi& src );
 	~Cgi();

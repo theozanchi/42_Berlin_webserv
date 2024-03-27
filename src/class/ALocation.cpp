@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:48 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/27 15:56:41 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 16:19:34 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,16 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-ALocation::ALocation() 
-	:	_autoIndex(false), 
+ALocation::ALocation( const Server& server ) 
+	:	_server(const_cast<Server&>(server)),
+		_autoIndex(false), 
 		_isPathSet(false),
 		_isAllowSet(false),
 		_isAutoIndexSet(false) {}
 
 ALocation::ALocation( const ALocation& src )
-	:	_path(src._path),
+	:	_server(src._server),
+		_path(src._path),
 		_allow(src._allow),
 		_autoIndex(src._autoIndex),
 		_isPathSet(src._isPathSet),
@@ -30,6 +32,7 @@ ALocation::ALocation( const ALocation& src )
 
 ALocation& ALocation::operator=( const ALocation& src ) {
 	if (this != &src) {
+		_server = src._server;
 		_path = src._path;
 		_allow = src._allow;
 		_autoIndex = src._autoIndex;

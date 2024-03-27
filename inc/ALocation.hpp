@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:59 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/27 15:51:39 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 16:15:25 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ class Server;
 
 class ALocation {
 protected:
+	Server&			_server;
 	string			_path;
 	vector<string>	_allow;
 	bool			_autoIndex;
@@ -33,7 +34,7 @@ protected:
 	bool			isValidAutoIndex( const string& token );
 
 public:
-	ALocation();
+	ALocation( const Server& server );
 	ALocation( const ALocation& src );
 	ALocation& operator=( const ALocation& src );
 	virtual ~ALocation() = 0;
