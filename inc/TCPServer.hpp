@@ -19,6 +19,7 @@
 #include <sstream>
 
 #include "Request.hpp"
+#include "Response.hpp"
 #include "Configuration.hpp"
 #include "webserv.hpp"
 
@@ -29,6 +30,7 @@ extern bool sigint_flag;
 
 class TCPServer {
 private:
+	Configuration	_config;
 // Sockets Server
 	int	*_server_socket_fd;
 	struct sockaddr_in	*_server_addr;
@@ -52,7 +54,8 @@ private:
 	TCPServer(); // Default Constructor
 
 public:
-	TCPServer(int *ports, int nb_of_ports, std::string *hosts); // Parametric Constructor int array
+
+	TCPServer(Configuration & config, int *ports, int nb_of_ports, std::string *hosts); // Parametric Constructor int array
 	//TCPServer(Configuration& config); // Parametric Constructor Config file
 	TCPServer(TCPServer const& cpy); // Copy Constructor
 	TCPServer operator= (TCPServer const& cpy); // Copy Assignment Operator

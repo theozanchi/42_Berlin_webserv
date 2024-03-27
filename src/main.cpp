@@ -76,8 +76,8 @@ int	main( int argc, char **argv )
 			{
 				std::cout << "Host: " << hosts[l] << " Ports: " << ports[l] << std::endl;
 			}
-
-			TCPServer aServer(ports, nb_of_ports, hosts);
+      
+			TCPServer aServer(config, ports, nb_of_ports, hosts);
 
 			signal(SIGINT, &handle_sigint);
       			aServer.accept_connections();

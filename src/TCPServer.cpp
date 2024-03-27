@@ -79,8 +79,7 @@
     }
 }*/
 
-
-TCPServer::TCPServer(int *ports, int nb_of_ports, std::string *hosts) : _nb_of_ports(nb_of_ports), _n_poll_fds(0), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
+TCPServer::TCPServer(Configuration & config, int *ports, int nb_of_ports, std::string *hosts) : _config(config), _nb_of_ports(nb_of_ports), _n_poll_fds(0), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
     std::cout << "TCPServer Int Array Param Constructor called" << std::endl;
     // I could also call getaddrinfo() to fill struct addrinfo
     // not sure if it fill in struct sockaddr as well
@@ -201,8 +200,8 @@ void TCPServer::accept_connections() {
     // 1++ multiple fds are waiting to be processed. poll() API allows simultaneous connection with all fd in the queue on the listening socket
     // accept() and recv() APIs are completed when the EWOULDBLOCK is returned
     // The IBM version is a blocking I/O operation
-    const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
-                        <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";
+    /*const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
+                        <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";*/
     char  recv_msg[1024];
 
     int     rt_val = 1;
@@ -296,16 +295,25 @@ void TCPServer::accept_connections() {
                         }
                         else
                         {
-                            // process data from client
-                            std::cout << "Server recv following msg: '" << recv_msg << "'" << std::endl;
-                            std::cout << "Here parsing of request should happen" << std::endl;
+				// process data from client
+				//std::cout << "Server recv following msg: '" << recv_msg << "'" << std::endl;
+				//std::cout << "Here parsing of request should happen" << std::endl;
 
-							std::string httpRequest = recv_msg;
-							Request newRequest(httpRequest);
-							std::cout << newRequest;
+				std::string httpRequest = recv_msg;
+				Request newRequest(httpRequest);
+				std::cout << newRequest;
+				
+				//Getting a response from Response class
 
-                            std::cout << "And appropriate HTTP Response should be send" << std::endl;
-                            send(_client_socket_fd, msg, std::strlen(msg), 0);
+				Response newResponse(_config, newRequest);
+				std::cout << newResponse;
+
+				std::string response = newResponse.getResponse();
+				const char* msg_response = response.c_str();
+
+				//std::cout << "And appropriate HTTP Response should be send" << std::endl;
+				send(_client_socket_fd, msg_response, std::strlen(msg_response), 0);
+				std::cout << "Message sent" << std::endl;
                         }
                     }
                 }
