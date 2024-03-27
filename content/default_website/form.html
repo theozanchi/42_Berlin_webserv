@@ -1,0 +1,156 @@
+<html>
+
+    <head>
+      <title>FCC Project Survey Form
+      </title>
+	  <style>
+	  #description {
+		text-align: center;
+	  }
+
+	  body {
+		font-family: Tahoma;
+		text-align: center;
+		background: linear-gradient(45deg, #a880ff, #a899ff, #b8adff, #d7d1ff, #f2f0ff);
+	  }
+
+	  #title {
+		text-align: center;
+		text-shadow: 0 0 8px #fff, 0 0 8px #fff, 0 0 8px #fff;
+		color: #ff7b00;
+	  }
+
+
+	  #survey-form {
+		border-radius: 30px;
+		box-shadow: 2px 2px #ad99ff;
+		background: #fffde5;
+		margin-top: 50px;
+		margin-left: 330px;
+		margin-right: 330px;
+		padding-top: 20px;
+		padding-bottom: 20px;
+		min-width: 630px;
+		display: flex;
+		align-items: center;
+		justify-content: space-around;
+		flex-direction: column;
+
+
+	  }
+	  #name-label {
+		font-family: Tahoma;
+		position: relative;
+		right: 280px;
+	  }
+	  #name {
+		font-family: Tahoma;
+		height: 30px;
+		width: 600px;
+		border-radius: 15px;
+	  }
+
+	  #email-label {
+		font-family: Tahoma;
+		position: relative;
+		right: 280px;
+	  }
+
+	  #email {
+		font-family: Tahoma;
+		height: 30px;
+		width: 600px;
+		border-radius: 15px;
+	  }
+
+	  #number-label {
+		font-family: Tahoma;
+		position: relative;
+		right: 285px;
+	  }
+
+	  #number {
+		font-family: Tahoma;
+		height: 30px;
+		width: 600px;
+		border-radius: 15px;
+	  }
+
+	  #dropdown-label {
+		font-family: Tahoma;
+		position: relative;
+		right: 185px;
+	  }
+
+	  #dropdown {
+		font-family: Tahoma;
+		height: 30px;
+		width: 600px;
+		border-radius: 15px;
+	  }
+
+	  [type='radio'] {
+		display: flex;
+		flex-direction: row;
+	  }
+
+	  [type='checkbox'] {
+		display: flex;
+		flex-direction: row;
+	  }
+
+	  #comments-label {
+		font-family: Tahoma;
+		position: relative;
+		right: 185px;
+	  }
+
+	  #comments {
+		font-family: Tahoma;
+		min-height: 100px;
+		width: 600px;
+		border-radius: 15px;
+	  }
+
+	  #submit {
+		background-color: #ff7b00;
+		color: #fff;
+		border: none;
+		padding: 15px;
+		height: 50px;
+		width: 500px;
+		font-size: 18px;
+		font-weight: bold;
+	  }
+	  </style>
+    </head>
+	<body>
+    <header>
+      <h1 id="title">Your Opinion counts!</h1>
+      <p id="description">We are very much interested in your personal view. Thanks for sharing your thoughts with us!</p>
+    </header>
+    <form id="survey-form" action="#">
+      <label for "name" id="name-label">Name</label><br><input type="text" id="name" name="name" placeholder="Enter your name" required><br>
+      <label for "email" id="email-label">Email</label><br>
+      <input type="email" id="email" name="email" placeholder="Enter your email" required><br>
+      <label for "number" id="number-label">Age</label><br>
+      <input type="number" id="number" name="number" placeholder="Age" min="1" max="110"><br>
+      <label for "dropdown" id="dropdown-label">What is your current occupation?</label><br>
+      <select id="dropdown">
+        <option value="occupation">Select current occupation</option>
+        <option value="Student">Student</option>
+        <option value="Worker">Worker</option>
+        <option value="None">Searching</option>
+      </select><br>
+      <label for "satisfaction">Are you happy with your current situation?</label><input type="radio" name="satisfaction" value="Yes" checked>Yes<br>
+      <input type="radio" name="satisfaction" value="No">No<br><br>
+      <label for "improvement">What could be done differently?</label><br><input type="checkbox" name="improvement" value="bureacracy">bureacracy<br>
+      <input type="checkbox" name="improvement" value="hierarchy">hierarchy<br>
+      <input type="checkbox" name="improvement" value="conditions">conditions<br><br>
+      <label for "comments" id="comments-label">Would you like to add something?</label><br><textarea cols="85" rows="5" id ="comments" name="comments" placeholder="Leave your comment..."></textarea><br>
+      <button type="submit" id="submit" class="button">Submit</button>
+    </form>
+    <footer>
+    </footer>
+  </body>
+</html>

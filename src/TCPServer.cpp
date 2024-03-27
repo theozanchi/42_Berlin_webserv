@@ -271,7 +271,7 @@ void TCPServer::accept_connections() {
                         // ad new fd to pollfds
                         std::cout << " accept() client " << _client_socket_fd << std::endl;
                         _poll_fds[numfds].fd = _client_socket_fd;
-                        _poll_fds[numfds].events = POLLIN;
+                        _poll_fds[numfds].events = POLLIN | POLLOUT;
                         numfds++;
                     }
                     // data from an existing connection, receive it
@@ -302,7 +302,7 @@ void TCPServer::accept_connections() {
 				std::string httpRequest = recv_msg;
 				Request newRequest(httpRequest);
 				std::cout << newRequest;
-				
+
 				//Getting a response from Response class
 
 				Response newResponse(_config, newRequest);

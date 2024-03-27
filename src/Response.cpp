@@ -44,7 +44,7 @@ void Response::checkBuildGetResponse()								//GET METHOOD
 	// DO CHECKS HERE:
 
 	// Reading from HTML-file:
-	_response = this->readFromFile("./content/default_website/index.html");		// Replase with a URI variable
+	_response = this->readFromFile("./content/default_website/form.html");		// Replase with a URI variable
 }
 
 void Response::checkBuildPostResponse() 										// POST METHOD
