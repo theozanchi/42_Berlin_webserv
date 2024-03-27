@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:48 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/26 11:41:09 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/26 17:42:20 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,11 @@ ALocation::~ALocation() {}
 
 void	ALocation::setPath( const vector<string>& tokens ) {
 	_path = tokens.at(2);
+	_isPathSet = true;
+}
+
+void	ALocation::setPath( const string& path ) {
+	_path = path;
 	_isPathSet = true;
 }
 

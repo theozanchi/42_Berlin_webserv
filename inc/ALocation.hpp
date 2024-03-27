@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:59 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/26 10:38:54 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/26 17:42:03 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ public:
 	virtual ~ALocation() = 0;
 
 	void				setPath( const vector<string>& tokens );
+	void				setPath( const string& path );
 	void				setAllow( const vector<string>& tokens );
 	void				setAutoIndex( const vector<string>& tokens );
 

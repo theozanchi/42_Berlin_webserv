@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:30 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/26 11:59:02 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/26 17:52:29 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -349,6 +349,13 @@ void	Server::setClientBodyTimeOut( const vector<string>& tokens ) {
 }
 
 void	Server::addLocation( const vector<string>& tokens ) {
+	string path = tokens.at(2);
+	if (path.at(0) == '/')
+		path = _root + path;
+	else if (path.at(0) == '~')
+		path = _root + path;
+	else
+		path = _root + "/" + path;
 	if (tokens.at(2).at(0) == '~')
 		_location[tokens.at(2)] = new Cgi();
 	else if (tokens.at(2).find("upload") != string::npos)
@@ -356,7 +363,7 @@ void	Server::addLocation( const vector<string>& tokens ) {
 	else
 		_location[tokens.at(2)] = new StdLocation();
 	
-	_location[tokens.at(2)]->setPath(tokens);
+	_location[tokens.at(2)]->setPath(path);
 }
 
 void	Server::addLocation( const ALocation& location ) {
@@ -505,6 +512,7 @@ void	Server::print( void ) const {
 	cout << "client_body_buffer_size: " << _clientBodyBufferSize << endl;
 	cout << "client_body_time_out: " << _clientBodyTimeOut << endl;
 	for (map<string, ALocation*>::const_iterator cit = _location.begin(); cit != _location.end(); ++cit) {
+		cout << cit->first << ": ";
 		cit->second->print();
 	}
 	cout << endl;
