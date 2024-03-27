@@ -30,11 +30,12 @@ extern bool sigint_flag;
 
 class TCPServer {
 private:
-	Configuration _config;
+	Configuration	_config;
 // Sockets Server
 	int	*_server_socket_fd;
 	struct sockaddr_in	*_server_addr;
 	int	*_ports;
+	std::string *_hosts;
 	int _nb_of_servers;
 	int	_nb_of_ports;
 
@@ -53,8 +54,8 @@ private:
 	TCPServer(); // Default Constructor
 
 public:
-	TCPServer(int *ports, int nb_of_ports, std::string *hosts); // Parametric Constructor int array
-	TCPServer(Configuration& config); // Parametric Constructor Config file
+	TCPServer(Configuration & config, int *ports, int nb_of_ports, std::string *hosts); // Parametric Constructor int array
+	//TCPServer(Configuration& config); // Parametric Constructor Config file
 	TCPServer(TCPServer const& cpy); // Copy Constructor
 	TCPServer operator= (TCPServer const& cpy); // Copy Assignment Operator
 	~TCPServer(); // Destructor
