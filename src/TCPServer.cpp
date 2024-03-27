@@ -3,7 +3,7 @@
 
 // For Each host:port I will create a Server Socket that is bind and listens to the host:port
 
-TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
+/*TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
     std::cout << "TCPServer Config file Param Constructor called" << std::endl;
 
     _nb_of_servers = config.getNbOfServers();
@@ -15,6 +15,8 @@ TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_s
     }
     _server_socket_fd = new int[_nb_of_ports];
 
+    struct addrinfo hints;
+    struct addrinfo *result;
     //const char host[10] = "127.0.0.1"; // only temporary until I get it from structure
     //const char port[5] = "8080"; // only temporary until I get it from structure
 
@@ -32,15 +34,17 @@ TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_s
             std::string port = SSTR(config_info.getListen(j));
 
             std::cout << "Server " << i << ": Host: " << host << ", Port: " << port << std::endl;
-            struct addrinfo hints;
-            struct addrinfo *result;
 
-            std::memset(&hints, '\0', sizeof hints);
+
+            //std::memset(&hints, 0, sizeof hints);
             hints.ai_family = AF_INET;
-            hints.ai_socktype = SOCK_STREAM; // I cannot use NON_BLOCK here
+            hints.ai_socktype = SOCK_STREAM | SOCK_NONBLOCK;
+            // I cannot use NON_BLOCK here
+            hints.ai_flags = AI_PASSIVE;
 
             if ((status = getaddrinfo(host.c_str(), port.c_str(), &hints, &result)) != 0) {
                 std::cout << "getaddrinfo failed" << std::endl;
+                std::cout << gai_strerror(status) << std::endl;
                 throw SocketCreationFailed();
             }
 
@@ -73,10 +77,9 @@ TCPServer::TCPServer(Configuration& config) : _timeout(3 * 60 * 1000), _client_s
             freeaddrinfo(result);
         }
     }
-}
+}*/
 
-
-TCPServer::TCPServer(int *ports, int nb_of_ports, std::string *hosts) : _nb_of_ports(nb_of_ports), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
+TCPServer::TCPServer(Configuration & config, int *ports, int nb_of_ports, std::string *hosts) : _config(config), _nb_of_ports(nb_of_ports), _n_poll_fds(0), _timeout(3 * 60 * 1000), _client_socket_fd(-1) {
     std::cout << "TCPServer Int Array Param Constructor called" << std::endl;
     // I could also call getaddrinfo() to fill struct addrinfo
     // not sure if it fill in struct sockaddr as well
@@ -87,16 +90,16 @@ TCPServer::TCPServer(int *ports, int nb_of_ports, std::string *hosts) : _nb_of_p
     // each port needs its own socket and therefore data structure and fd
     _server_addr = new struct sockaddr_in[nb_of_ports];
     _server_socket_fd = new int[nb_of_ports];
-    _ports = new int[nb_of_ports];
+    _ports = ports;
+    _hosts = hosts;
     int yes = 1;
 
     for (int i = 0; i < nb_of_ports; i++)
     {
-        _ports[i] = ports[i];
         _server_addr[i].sin_family = AF_INET;
         // sin_addr Internet Address in Network Byte Order
         // INADDR_ANY use my IPv4 address
-        _server_addr[i].sin_addr.s_addr = inet_addr(hosts[i].c_str());
+        _server_addr[i].sin_addr.s_addr = inet_addr(_hosts[i].c_str());
         // sin_port Port Number in Network Byte Order
         // htons() converts values btw host and network byte order
         _server_addr[i].sin_port = htons(_ports[i]);
@@ -105,12 +108,9 @@ TCPServer::TCPServer(int *ports, int nb_of_ports, std::string *hosts) : _nb_of_p
         // AF_INET IPv4 vs IPv6
         // SOCK_STREAM FOR TCP vs UDP
         // SOCK_NONBLOCK to set socket in non-blocking mode SOCK_STREAM | SOCK_NONBLOCK
-        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+        if ((_server_socket_fd[i] = socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) < 0) {
             throw SocketCreationFailed();
         }
-
-        // for my mac only
-        //fcntl(_server_socket_fd[i], F_SETFL, O_NONBLOCK);
 
         // to avoid bind() error "port already in use" when rerunning the server
         if (setsockopt(_server_socket_fd[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
@@ -146,15 +146,8 @@ TCPServer TCPServer::operator= (TCPServer const& cpy) {
 TCPServer::~TCPServer() {
     std::cout << "TCPServer Destructor called" << std::endl;
 
-     for (unsigned int i = 0; i < _n_poll_fds; i++)
-    {
-        if (_poll_fds[i].fd > 0)
-            close(_poll_fds[i].fd);
-    }
-   
-    delete [] _server_socket_fd;
    // Destructor for int array param Constructor
-   /* for (unsigned int i = 0; i < _n_poll_fds; i++)
+   for (unsigned int i = 0; i < _n_poll_fds; i++)
     {
         if (_poll_fds[i].fd > 0)
             close(_poll_fds[i].fd);
@@ -162,7 +155,8 @@ TCPServer::~TCPServer() {
 
     delete [] _server_socket_fd;
     delete [] _server_addr;
-    delete [] _ports;*/
+    delete [] _ports;
+    delete [] _hosts;
 } // Destructor
 
 void TCPServer::wait_for_connection() {
@@ -206,8 +200,8 @@ void TCPServer::accept_connections() {
     // 1++ multiple fds are waiting to be processed. poll() API allows simultaneous connection with all fd in the queue on the listening socket
     // accept() and recv() APIs are completed when the EWOULDBLOCK is returned
     // The IBM version is a blocking I/O operation
-    const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
-                        <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";
+    /*const char* msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>A simple webpage</title>\n</head>\n<body>\n \
+                        <h1>Simple HTML webpage</h1>\n<p>Hello, world!</p>\n</body>\n</html>\n";*/
     char  recv_msg[1024];
 
     int     rt_val = 1;
@@ -286,6 +280,7 @@ void TCPServer::accept_connections() {
                         std::memset(&recv_msg, '\0', sizeof recv_msg);
                         ssize_t numbytes = recv(_poll_fds[i].fd, &recv_msg, sizeof recv_msg, 0);
 
+                        // control for max body length set in config file
                         if (numbytes < 0)
                             std::cout << "recv() failed" << std::endl;
                         else if (numbytes == 0)
@@ -300,16 +295,25 @@ void TCPServer::accept_connections() {
                         }
                         else
                         {
-                            // process data from client
-                            std::cout << "Server recv following msg: '" << recv_msg << "'" << std::endl;
-                            std::cout << "Here parsing of request should happen" << std::endl;
+				// process data from client
+				//std::cout << "Server recv following msg: '" << recv_msg << "'" << std::endl;
+				//std::cout << "Here parsing of request should happen" << std::endl;
 
-							std::string httpRequest = recv_msg;
-							Request newRequest(httpRequest);
-							std::cout << newRequest;
+				std::string httpRequest = recv_msg;
+				Request newRequest(httpRequest);
+				std::cout << newRequest;
+				
+				//Getting a response from Response class
 
-                            std::cout << "And appropriate HTTP Response should be send" << std::endl;
-                            send(_client_socket_fd, msg, std::strlen(msg), 0);
+				Response newResponse(_config, newRequest);
+				std::cout << newResponse;
+
+				std::string response = newResponse.getResponse();
+				const char* msg_response = response.c_str();
+
+				//std::cout << "And appropriate HTTP Response should be send" << std::endl;
+				send(_client_socket_fd, msg_response, std::strlen(msg_response), 0);
+				std::cout << "Message sent" << std::endl;
                         }
                     }
                 }
