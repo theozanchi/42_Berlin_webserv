@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:50:17 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/22 10:22:36 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/28 12:41:17 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-Upload::Upload() : ALocation() {}
+Upload::Upload( const Server& server ) : ALocation(server) {}
 
 Upload::Upload( const Upload& src )
 	:	ALocation(src),
@@ -31,15 +31,33 @@ Upload& Upload::operator=( const Upload& src ) {
 
 Upload::~Upload() {}
 
+/* Input validation ********************************************************* */
+
+bool	Upload::isValidUploadStore( const string& token ) {
+	if (access(token.c_str(), R_OK) == -1)
+		return (false);
+	return (true);
+}
+
 /* Setters ****************************************************************** */
 
 void	Upload::setUploadStore( const vector<string>& tokens ) {
-	string	uploadStore = tokens.at(2);
+	string	path = tokens.at(2);
 
-	if ((uploadStore.at(0) == '\'' || uploadStore.at(0) == '\"')
-		&& uploadStore.at(0) == uploadStore.at(uploadStore.length() - 1))
-		uploadStore = uploadStore.substr(1, uploadStore.length() - 2);
-	_uploadStore = uploadStore;
+	if ((path.at(0) == '\'' || path.at(0) == '\"')
+		&& path.at(0) == path.at(path.length() - 1))
+		path = path.substr(1, path.length() - 2);
+	if (path.at(path.length() - 1) == '/')
+		path = _server.getRoot() + path;
+	else
+		path = _server.getRoot() + "/" + path;
+
+	if (!isValidUploadStore(path)) {
+		stringstream ss;
+		ss << "Warning: invalid " << tokens.at(2) << " upload path at line " << tokens.at(0) << ", using default value";
+		throw (invalid_argument(ss.str()));
+	}
+	_uploadStore = path;
 	_isUploadStoreSet = true;
 }
 

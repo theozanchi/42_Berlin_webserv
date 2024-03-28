@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 18:18:20 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/21 09:07:00 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/26 11:40:41 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ map<string, void (Server::*)(const vector<string>&)> populateServerKeys( void ) 
 	keys["listen"] = &Server::setListen;
 	keys["host"] = &Server::setHost;
 	keys["server_name"] = &Server::setServerName;
+	keys["root"] = &Server::setRoot;
 	keys["error_page"] = &Server::setErrorPage;
 	keys["client_max_body_size"] = &Server::setClientMaxBodySize;
 	keys["client_body_in_file_only"] = &Server::setClientBodyInFileOnly;
@@ -94,7 +95,7 @@ void	Parser::populateServerAttribute( Configuration& config, const vector<string
 	else {
 		stringstream ss;
 		ss << "Invalid config at line " << tokens.at(0) << ": invalid \"" << tokens.at(1) << "\" key for a server block";
-		throw (ss.str());
+		throw (invalid_argument(ss.str()));
 	}
 }
 
@@ -123,7 +124,7 @@ void	Parser::populateStdLocationAttribute( Configuration& config, const vector<s
 	else {
 		stringstream ss;
 		ss << "Invalid config at line " << tokens.at(0) << ": invalid \"" << tokens.at(1) << "\" key for a standard location block";
-		throw (ss.str());
+		throw (invalid_argument(ss.str()));
 	}
 }
 
@@ -152,7 +153,7 @@ void	Parser::populateUploadAttribute( Configuration& config, const vector<string
 	else {
 		stringstream ss;
 		ss << "Invalid config at line " << tokens.at(0) << ": invalid \"" << tokens.at(1) << "\" key for an upload location block";
-		throw (ss.str());
+		throw (invalid_argument(ss.str()));
 	}
 }
 
@@ -181,6 +182,6 @@ void	Parser::populateCgiAttribute( Configuration& config, const vector<string>& 
 	else {
 		stringstream ss;
 		ss << "Invalid config at line " << tokens.at(0) << ": invalid \"" << tokens.at(1) << "\" key for a CGI location block";
-		throw (ss.str());
+		throw (invalid_argument(ss.str()));
 	}
 }

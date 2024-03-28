@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:46:25 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/22 10:22:19 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/28 09:37:07 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,10 @@ class Upload : public ALocation{
 private:
 	string	_uploadStore;
 	bool	_isUploadStoreSet;
+	bool	isValidUploadStore( const string& token );
 
 public:
-	Upload();
+	Upload( const Server& server );
 	Upload( const Upload& src );
 	Upload& operator=( const Upload& src );
 	~Upload();

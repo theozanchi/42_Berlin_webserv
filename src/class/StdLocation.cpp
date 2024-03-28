@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:52:21 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/22 10:20:00 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/27 16:23:02 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /* Constructors, assignment operator and destructor ************************* */
 
-StdLocation::StdLocation() : ALocation(), _isIndexSet(false) {}
+StdLocation::StdLocation( const Server& server ) : ALocation(server), _isIndexSet(false) {}
 
 StdLocation::StdLocation( const StdLocation& src )
 	:	ALocation(src),
@@ -33,15 +33,33 @@ StdLocation& StdLocation::operator=( const StdLocation& src ) {
 
 StdLocation::~StdLocation() {}
 
+/* Input validation ********************************************************* */
+
+bool	StdLocation::isValidIndex( const string& token ) {
+	if (access(token.c_str(), R_OK) == -1)
+		return (false);
+	return (true);
+}
+
 /* Setters ****************************************************************** */
 
 void	StdLocation::setIndex( const vector<string>& tokens ) {
-	string	index = tokens.at(2);
+	string	path = tokens.at(2);
 
-	if ((index.at(0) == '\'' || index.at(0) == '\"')
-		&& index.at(0) == index.at(index.length() - 1))
-		index = index.substr(1, index.length() - 2);
-	_index = index;
+	if ((path.at(0) == '\'' || path.at(0) == '\"')
+		&& path.at(0) == path.at(path.length() - 1))
+		path = path.substr(1, path.length() - 2);
+	if (path.at(path.length() - 1) == '/')
+		path = _server.getRoot() + path;
+	else
+		path = _server.getRoot() + "/" + path;
+
+	if (!isValidIndex(path)) {
+		stringstream ss;
+		ss << "Warning: invalid " << tokens.at(2) << " index path at line " << tokens.at(0) << ", using default value";
+		throw (invalid_argument(ss.str()));
+	}
+	_index = path;
 	_isIndexSet = true;
 }
 

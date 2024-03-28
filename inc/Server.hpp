@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:12:27 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/21 10:45:18 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/26 11:45:43 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <string>
 # include <map>
 # include <functional>
+# include <arpa/inet.h>
+# include <unistd.h>
 
 using namespace std;
 
@@ -27,17 +29,33 @@ private:
 	vector<int>				_listen;
 	vector<string>			_host;
 	vector<string>			_serverName;
+	string					_root;
 	map<int, string>		_errorPage;
-	int						_clientMaxBodySize;
+	long long				_clientMaxBodySize;
 	bool					_clientBodyInFileOnly;
 	int						_clientBodyBufferSize;
 	int						_clientBodyTimeOut;
 	map<string, ALocation*>	_location;
 
 	bool					_isListenSet, _isHostSet, _isServerNameSet, \
-							_isErrorPageSet, _isClientMaxBodySizeSet, \
+							_isRootSet, _isErrorPageSet, _isClientMaxBodySizeSet, \
 							_isClientBodyInFileOnlySet, _isClientBodyBufferSizeSet, \
 							_isClientBodyTimeOutSet;
+
+	bool					isValidListen( const string& token );
+	bool					isValidHost( const string& token );
+	bool					isValidServerName( const string& token );
+	bool					isValidRoot( const string& token );
+	bool					isValidErrorPagePath( const string& token );
+	bool					isValidErrorPage( const string& token );
+	bool					isValidClientMaxBodySize( const string& token );
+	bool					isValidClientBodyInFileOnly( const string& token );
+	bool					isValidClientBodyBufferSize( const string& token );
+	bool					isValidClientBodyTimeOut( const string& token );
+
+	bool					isStdLocationSet( void ) const;
+	bool					isUploadSet( void ) const;
+	bool					isCgiSet( void ) const;
 
 public:
 	Server();
@@ -48,6 +66,7 @@ public:
 	void			setListen( const vector<string>& tokens );
 	void			setHost( const vector<string>& tokens );
 	void			setServerName( const vector<string>& tokens );
+	void			setRoot( const vector<string>& tokens );
 	void			setErrorPage( const vector<string>& tokens );
 	void			setClientMaxBodySize( const vector<string>& tokens );
 	void			setClientBodyInFileOnly( const vector<string>& tokens );
@@ -63,16 +82,13 @@ public:
 	vector<string>	getHost( void ) const;
 	string			getServerName( size_t idx ) const;
 	vector<string>	getServerName( void ) const;
+	string			getRoot( void ) const;
 	string			getErrorPage( int code ) const;
 	int				getClientMaxBodySize( void ) const;
 	bool			getClientBodyInFileOnly( void ) const;
 	int				getClientBodyBufferSize( void ) const;
 	int				getClientBodyTimeOut( void ) const;
 	ALocation*		getLocation( const string& path_or_flag );
-
-	bool			isStdLocationSet( void ) const;
-	bool			isUploadSet( void ) const;
-	bool			isCgiSet( void ) const;
 
 	void			print( void ) const;
 	void			merge( Server& src );
