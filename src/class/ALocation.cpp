@@ -6,7 +6,7 @@
 /*   By: tzanchi <tzanchi@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:59:48 by tzanchi           #+#    #+#             */
-/*   Updated: 2024/03/27 16:19:34 by tzanchi          ###   ########.fr       */
+/*   Updated: 2024/03/28 13:37:10 by tzanchi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ ALocation& ALocation::operator=( const ALocation& src ) {
 
 ALocation::~ALocation() {}
 
-/* Breakline **************************************************************** */
+/* Input validation ********************************************************* */
 
 bool	ALocation::isValidPath( const string& token, int type ) {
 	if (access(token.c_str(), type) == -1)
